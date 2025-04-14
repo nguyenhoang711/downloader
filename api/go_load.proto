@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package go_load.v1;
+package go_load;
 
-
+option go_package = "grpc/go_load";
 
 service GoLoadService {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {}
@@ -100,5 +100,5 @@ message GetDownloadTaskFileRequest {
     uint64 download_task_id = 1;
 }
 message GetDownloadTaskFileResponse {
-    byte data = 1;
+    bytes data = 1;
 }
