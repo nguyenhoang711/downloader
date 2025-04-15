@@ -38,7 +38,6 @@ type GoLoadServiceClient interface {
 	GetDownloadTaskList(ctx context.Context, in *GetDownloadTaskListRequest, opts ...grpc.CallOption) (*GetDownloadTaskListResponse, error)
 	UpdateDownloadTask(ctx context.Context, in *UpdateDownloadTaskRequest, opts ...grpc.CallOption) (*UpdateDownloadTaskResponse, error)
 	DeleteDownloadTask(ctx context.Context, in *DeleteDownloadTaskRequest, opts ...grpc.CallOption) (*DeleteDownloadTaskResponse, error)
-	// return stream method get large file
 	GetDownloadTaskFile(ctx context.Context, in *GetDownloadTaskFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetDownloadTaskFileResponse], error)
 }
 
@@ -139,7 +138,6 @@ type GoLoadServiceServer interface {
 	GetDownloadTaskList(context.Context, *GetDownloadTaskListRequest) (*GetDownloadTaskListResponse, error)
 	UpdateDownloadTask(context.Context, *UpdateDownloadTaskRequest) (*UpdateDownloadTaskResponse, error)
 	DeleteDownloadTask(context.Context, *DeleteDownloadTaskRequest) (*DeleteDownloadTaskResponse, error)
-	// return stream method get large file
 	GetDownloadTaskFile(*GetDownloadTaskFileRequest, grpc.ServerStreamingServer[GetDownloadTaskFileResponse]) error
 	mustEmbedUnimplementedGoLoadServiceServer()
 }

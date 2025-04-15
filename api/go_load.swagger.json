@@ -146,7 +146,6 @@
     },
     "/go_load.GoLoadService/GetDownloadTaskFile": {
       "post": {
-        "summary": "return stream method get large file",
         "operationId": "GoLoadService_GetDownloadTaskFile",
         "responses": {
           "200": {
@@ -252,18 +251,6 @@
     }
   },
   "definitions": {
-    "go_loadAccount": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "accountName": {
-          "type": "string"
-        }
-      }
-    },
     "go_loadCreateAccountRequest": {
       "type": "object",
       "properties": {
@@ -281,9 +268,6 @@
         "userId": {
           "type": "string",
           "format": "uint64"
-        },
-        "username": {
-          "type": "string"
         }
       }
     },
@@ -331,9 +315,11 @@
     "go_loadDeleteDownloadTaskRequest": {
       "type": "object",
       "properties": {
-        "downloadTaskId": {
-          "type": "string",
-          "format": "uint64"
+        "token": {
+          "type": "string"
+        },
+        "downloadTask": {
+          "$ref": "#/definitions/go_loadDownloadTask"
         }
       }
     },
@@ -343,13 +329,13 @@
     "go_loadDownloadStatus": {
       "type": "string",
       "enum": [
-        "DOWNLOAD_STATUS_UNSPECIFIED",
-        "DOWNLOAD_STATUS_PENDING",
-        "DOWNLOAD_STATUS_DOWNLOADING",
-        "DOWNLOAD_STATUS_FAILED",
-        "DOWNLOAD_STATUS_SUCCESS"
+        "UndefinedStatus",
+        "Pending",
+        "Downloading",
+        "Failed",
+        "Success"
       ],
-      "default": "DOWNLOAD_STATUS_UNSPECIFIED"
+      "default": "UndefinedStatus"
     },
     "go_loadDownloadTask": {
       "type": "object",
@@ -358,8 +344,8 @@
           "type": "string",
           "format": "uint64"
         },
-        "ofAccount": {
-          "$ref": "#/definitions/go_loadAccount"
+        "ofUser": {
+          "$ref": "#/definitions/go_loadUser"
         },
         "downloadType": {
           "$ref": "#/definitions/go_loadDownloadType"
@@ -375,14 +361,17 @@
     "go_loadDownloadType": {
       "type": "string",
       "enum": [
-        "DOWNLOAD_TYPE_UNSPECIFIED",
-        "DOWNLOAD_TYPE_HTTP"
+        "UndefinedType",
+        "HTTP"
       ],
-      "default": "DOWNLOAD_TYPE_UNSPECIFIED"
+      "default": "UndefinedType"
     },
     "go_loadGetDownloadTaskFileRequest": {
       "type": "object",
       "properties": {
+        "token": {
+          "type": "string"
+        },
         "downloadTaskId": {
           "type": "string",
           "format": "uint64"
@@ -433,6 +422,9 @@
     "go_loadUpdateDownloadTaskRequest": {
       "type": "object",
       "properties": {
+        "token": {
+          "type": "string"
+        },
         "downloadTaskId": {
           "type": "string",
           "format": "uint64"
@@ -447,6 +439,18 @@
       "properties": {
         "downloadTask": {
           "$ref": "#/definitions/go_loadDownloadTask"
+        }
+      }
+    },
+    "go_loadUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "username": {
+          "type": "string"
         }
       }
     },

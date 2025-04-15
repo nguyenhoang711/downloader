@@ -7,6 +7,7 @@
 package go_load
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -24,19 +25,19 @@ const (
 type DownloadType int32
 
 const (
-	DownloadType_DOWNLOAD_TYPE_UNSPECIFIED DownloadType = 0
-	DownloadType_DOWNLOAD_TYPE_HTTP        DownloadType = 1
+	DownloadType_UndefinedType DownloadType = 0
+	DownloadType_HTTP          DownloadType = 1
 )
 
 // Enum value maps for DownloadType.
 var (
 	DownloadType_name = map[int32]string{
-		0: "DOWNLOAD_TYPE_UNSPECIFIED",
-		1: "DOWNLOAD_TYPE_HTTP",
+		0: "UndefinedType",
+		1: "HTTP",
 	}
 	DownloadType_value = map[string]int32{
-		"DOWNLOAD_TYPE_UNSPECIFIED": 0,
-		"DOWNLOAD_TYPE_HTTP":        1,
+		"UndefinedType": 0,
+		"HTTP":          1,
 	}
 )
 
@@ -70,28 +71,28 @@ func (DownloadType) EnumDescriptor() ([]byte, []int) {
 type DownloadStatus int32
 
 const (
-	DownloadStatus_DOWNLOAD_STATUS_UNSPECIFIED DownloadStatus = 0
-	DownloadStatus_DOWNLOAD_STATUS_PENDING     DownloadStatus = 1
-	DownloadStatus_DOWNLOAD_STATUS_DOWNLOADING DownloadStatus = 2
-	DownloadStatus_DOWNLOAD_STATUS_FAILED      DownloadStatus = 3
-	DownloadStatus_DOWNLOAD_STATUS_SUCCESS     DownloadStatus = 4
+	DownloadStatus_UndefinedStatus DownloadStatus = 0
+	DownloadStatus_Pending         DownloadStatus = 1
+	DownloadStatus_Downloading     DownloadStatus = 2
+	DownloadStatus_Failed          DownloadStatus = 3
+	DownloadStatus_Success         DownloadStatus = 4
 )
 
 // Enum value maps for DownloadStatus.
 var (
 	DownloadStatus_name = map[int32]string{
-		0: "DOWNLOAD_STATUS_UNSPECIFIED",
-		1: "DOWNLOAD_STATUS_PENDING",
-		2: "DOWNLOAD_STATUS_DOWNLOADING",
-		3: "DOWNLOAD_STATUS_FAILED",
-		4: "DOWNLOAD_STATUS_SUCCESS",
+		0: "UndefinedStatus",
+		1: "Pending",
+		2: "Downloading",
+		3: "Failed",
+		4: "Success",
 	}
 	DownloadStatus_value = map[string]int32{
-		"DOWNLOAD_STATUS_UNSPECIFIED": 0,
-		"DOWNLOAD_STATUS_PENDING":     1,
-		"DOWNLOAD_STATUS_DOWNLOADING": 2,
-		"DOWNLOAD_STATUS_FAILED":      3,
-		"DOWNLOAD_STATUS_SUCCESS":     4,
+		"UndefinedStatus": 0,
+		"Pending":         1,
+		"Downloading":     2,
+		"Failed":          3,
+		"Success":         4,
 	}
 )
 
@@ -122,28 +123,28 @@ func (DownloadStatus) EnumDescriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{1}
 }
 
-type Account struct {
+type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	AccountName   string                 `protobuf:"bytes,2,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Account) Reset() {
-	*x = Account{}
+func (x *User) Reset() {
+	*x = User{}
 	mi := &file_api_go_load_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Account) String() string {
+func (x *User) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Account) ProtoMessage() {}
+func (*User) ProtoMessage() {}
 
-func (x *Account) ProtoReflect() protoreflect.Message {
+func (x *User) ProtoReflect() protoreflect.Message {
 	mi := &file_api_go_load_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -155,21 +156,21 @@ func (x *Account) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Account.ProtoReflect.Descriptor instead.
-func (*Account) Descriptor() ([]byte, []int) {
+// Deprecated: Use User.ProtoReflect.Descriptor instead.
+func (*User) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Account) GetId() uint64 {
+func (x *User) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *Account) GetAccountName() string {
+func (x *User) GetUsername() string {
 	if x != nil {
-		return x.AccountName
+		return x.Username
 	}
 	return ""
 }
@@ -177,7 +178,7 @@ func (x *Account) GetAccountName() string {
 type DownloadTask struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Id             uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	OfAccount      *Account               `protobuf:"bytes,2,opt,name=of_account,json=ofAccount,proto3" json:"of_account,omitempty"`
+	OfUser         *User                  `protobuf:"bytes,2,opt,name=of_user,json=ofUser,proto3" json:"of_user,omitempty"`
 	DownloadType   DownloadType           `protobuf:"varint,3,opt,name=download_type,json=downloadType,proto3,enum=go_load.DownloadType" json:"download_type,omitempty"`
 	Url            string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
 	DownloadStatus DownloadStatus         `protobuf:"varint,5,opt,name=download_status,json=downloadStatus,proto3,enum=go_load.DownloadStatus" json:"download_status,omitempty"`
@@ -222,9 +223,9 @@ func (x *DownloadTask) GetId() uint64 {
 	return 0
 }
 
-func (x *DownloadTask) GetOfAccount() *Account {
+func (x *DownloadTask) GetOfUser() *User {
 	if x != nil {
-		return x.OfAccount
+		return x.OfUser
 	}
 	return nil
 }
@@ -233,7 +234,7 @@ func (x *DownloadTask) GetDownloadType() DownloadType {
 	if x != nil {
 		return x.DownloadType
 	}
-	return DownloadType_DOWNLOAD_TYPE_UNSPECIFIED
+	return DownloadType_UndefinedType
 }
 
 func (x *DownloadTask) GetUrl() string {
@@ -247,7 +248,7 @@ func (x *DownloadTask) GetDownloadStatus() DownloadStatus {
 	if x != nil {
 		return x.DownloadStatus
 	}
-	return DownloadStatus_DOWNLOAD_STATUS_UNSPECIFIED
+	return DownloadStatus_UndefinedStatus
 }
 
 type CreateAccountRequest struct {
@@ -305,7 +306,6 @@ func (x *CreateAccountRequest) GetPassword() string {
 type CreateAccountResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        uint64                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -345,13 +345,6 @@ func (x *CreateAccountResponse) GetUserId() uint64 {
 		return x.UserId
 	}
 	return 0
-}
-
-func (x *CreateAccountResponse) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
 }
 
 type CreateSessionRequest struct {
@@ -500,7 +493,7 @@ func (x *CreateDownloadTaskRequest) GetDownloadType() DownloadType {
 	if x != nil {
 		return x.DownloadType
 	}
-	return DownloadType_DOWNLOAD_TYPE_UNSPECIFIED
+	return DownloadType_UndefinedType
 }
 
 func (x *CreateDownloadTaskRequest) GetUrl() string {
@@ -668,8 +661,9 @@ func (x *GetDownloadTaskListResponse) GetTotalDownloadTaskCount() uint64 {
 
 type UpdateDownloadTaskRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
-	Url            string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	Url            string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -702,6 +696,13 @@ func (x *UpdateDownloadTaskRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateDownloadTaskRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDownloadTaskRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateDownloadTaskRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
 }
 
 func (x *UpdateDownloadTaskRequest) GetDownloadTaskId() uint64 {
@@ -763,10 +764,11 @@ func (x *UpdateDownloadTaskResponse) GetDownloadTask() *DownloadTask {
 }
 
 type DeleteDownloadTaskRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	DownloadTask  *DownloadTask          `protobuf:"bytes,2,opt,name=download_task,json=downloadTask,proto3" json:"download_task,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteDownloadTaskRequest) Reset() {
@@ -799,11 +801,18 @@ func (*DeleteDownloadTaskRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *DeleteDownloadTaskRequest) GetDownloadTaskId() uint64 {
+func (x *DeleteDownloadTaskRequest) GetToken() string {
 	if x != nil {
-		return x.DownloadTaskId
+		return x.Token
 	}
-	return 0
+	return ""
+}
+
+func (x *DeleteDownloadTaskRequest) GetDownloadTask() *DownloadTask {
+	if x != nil {
+		return x.DownloadTask
+	}
+	return nil
 }
 
 type DeleteDownloadTaskResponse struct {
@@ -844,7 +853,8 @@ func (*DeleteDownloadTaskResponse) Descriptor() ([]byte, []int) {
 
 type GetDownloadTaskFileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -877,6 +887,13 @@ func (x *GetDownloadTaskFileRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetDownloadTaskFileRequest.ProtoReflect.Descriptor instead.
 func (*GetDownloadTaskFileRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetDownloadTaskFileRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
 }
 
 func (x *GetDownloadTaskFileRequest) GetDownloadTaskId() uint64 {
@@ -934,62 +951,64 @@ var File_api_go_load_proto protoreflect.FileDescriptor
 
 const file_api_go_load_proto_rawDesc = "" +
 	"\n" +
-	"\x11api/go_load.proto\x12\ago_load\"<\n" +
-	"\aAccount\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12!\n" +
-	"\faccount_name\x18\x02 \x01(\tR\vaccountName\"\xdf\x01\n" +
+	"\x11api/go_load.proto\x12\ago_load\x1a\x12api/validate.proto\"2\n" +
+	"\x04User\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\"\xd6\x01\n" +
 	"\fDownloadTask\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12/\n" +
-	"\n" +
-	"of_account\x18\x02 \x01(\v2\x10.go_load.AccountR\tofAccount\x12:\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12&\n" +
+	"\aof_user\x18\x02 \x01(\v2\r.go_load.UserR\x06ofUser\x12:\n" +
 	"\rdownload_type\x18\x03 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x10\n" +
 	"\x03url\x18\x04 \x01(\tR\x03url\x12@\n" +
-	"\x0fdownload_status\x18\x05 \x01(\x0e2\x17.go_load.DownloadStatusR\x0edownloadStatus\"N\n" +
-	"\x14CreateAccountRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"L\n" +
+	"\x0fdownload_status\x18\x05 \x01(\x0e2\x17.go_load.DownloadStatusR\x0edownloadStatus\"\x86\x01\n" +
+	"\x14CreateAccountRequest\x126\n" +
+	"\busername\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\busername\x126\n" +
+	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"0\n" +
 	"\x15CreateAccountResponse\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x04R\x06userId\x12\x1a\n" +
-	"\busername\x18\x02 \x01(\tR\busername\"N\n" +
-	"\x14CreateSessionRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"-\n" +
+	"\auser_id\x18\x01 \x01(\x04R\x06userId\"\x86\x01\n" +
+	"\x14CreateSessionRequest\x126\n" +
+	"\busername\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\busername\x126\n" +
+	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"-\n" +
 	"\x15CreateSessionResponse\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\"\x7f\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\x89\x01\n" +
 	"\x19CreateDownloadTaskRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12:\n" +
-	"\rdownload_type\x18\x02 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x10\n" +
-	"\x03url\x18\x03 \x01(\tR\x03url\"X\n" +
+	"\rdownload_type\x18\x02 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x1a\n" +
+	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
 	"\x1aCreateDownloadTaskResponse\x12:\n" +
-	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"`\n" +
+	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"i\n" +
 	"\x1aGetDownloadTaskListRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x04R\x06offset\x12\x14\n" +
-	"\x05limit\x18\x03 \x01(\x04R\x05limit\"\x9d\x01\n" +
+	"\x06offset\x18\x02 \x01(\x04R\x06offset\x12\x1d\n" +
+	"\x05limit\x18\x03 \x01(\x04B\a\xfaB\x042\x02\x18dR\x05limit\"\x9d\x01\n" +
 	"\x1bGetDownloadTaskListResponse\x12C\n" +
 	"\x12download_task_list\x18\x01 \x03(\v2\x15.go_load.DownloadTaskR\x10downloadTaskList\x129\n" +
-	"\x19total_download_task_count\x18\x02 \x01(\x04R\x16totalDownloadTaskCount\"W\n" +
-	"\x19UpdateDownloadTaskRequest\x12(\n" +
-	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\x12\x10\n" +
-	"\x03url\x18\x02 \x01(\tR\x03url\"X\n" +
+	"\x19total_download_task_count\x18\x02 \x01(\x04R\x16totalDownloadTaskCount\"w\n" +
+	"\x19UpdateDownloadTaskRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
+	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\x12\x1a\n" +
+	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
 	"\x1aUpdateDownloadTaskResponse\x12:\n" +
-	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"E\n" +
-	"\x19DeleteDownloadTaskRequest\x12(\n" +
-	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\"\x1c\n" +
-	"\x1aDeleteDownloadTaskResponse\"F\n" +
-	"\x1aGetDownloadTaskFileRequest\x12(\n" +
-	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\"1\n" +
+	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"m\n" +
+	"\x19DeleteDownloadTaskRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12:\n" +
+	"\rdownload_task\x18\x02 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"\x1c\n" +
+	"\x1aDeleteDownloadTaskResponse\"\\\n" +
+	"\x1aGetDownloadTaskFileRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
+	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\"1\n" +
 	"\x1bGetDownloadTaskFileResponse\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data*E\n" +
-	"\fDownloadType\x12\x1d\n" +
-	"\x19DOWNLOAD_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12DOWNLOAD_TYPE_HTTP\x10\x01*\xa8\x01\n" +
-	"\x0eDownloadStatus\x12\x1f\n" +
-	"\x1bDOWNLOAD_STATUS_UNSPECIFIED\x10\x00\x12\x1b\n" +
-	"\x17DOWNLOAD_STATUS_PENDING\x10\x01\x12\x1f\n" +
-	"\x1bDOWNLOAD_STATUS_DOWNLOADING\x10\x02\x12\x1a\n" +
-	"\x16DOWNLOAD_STATUS_FAILED\x10\x03\x12\x1b\n" +
-	"\x17DOWNLOAD_STATUS_SUCCESS\x10\x042\xa0\x05\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data*+\n" +
+	"\fDownloadType\x12\x11\n" +
+	"\rUndefinedType\x10\x00\x12\b\n" +
+	"\x04HTTP\x10\x01*\\\n" +
+	"\x0eDownloadStatus\x12\x13\n" +
+	"\x0fUndefinedStatus\x10\x00\x12\v\n" +
+	"\aPending\x10\x01\x12\x0f\n" +
+	"\vDownloading\x10\x02\x12\n" +
+	"\n" +
+	"\x06Failed\x10\x03\x12\v\n" +
+	"\aSuccess\x10\x042\xa0\x05\n" +
 	"\rGoLoadService\x12P\n" +
 	"\rCreateAccount\x12\x1d.go_load.CreateAccountRequest\x1a\x1e.go_load.CreateAccountResponse\"\x00\x12P\n" +
 	"\rCreateSession\x12\x1d.go_load.CreateSessionRequest\x1a\x1e.go_load.CreateSessionResponse\"\x00\x12_\n" +
@@ -1016,7 +1035,7 @@ var file_api_go_load_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_api_go_load_proto_goTypes = []any{
 	(DownloadType)(0),                   // 0: go_load.DownloadType
 	(DownloadStatus)(0),                 // 1: go_load.DownloadStatus
-	(*Account)(nil),                     // 2: go_load.Account
+	(*User)(nil),                        // 2: go_load.User
 	(*DownloadTask)(nil),                // 3: go_load.DownloadTask
 	(*CreateAccountRequest)(nil),        // 4: go_load.CreateAccountRequest
 	(*CreateAccountResponse)(nil),       // 5: go_load.CreateAccountResponse
@@ -1034,32 +1053,33 @@ var file_api_go_load_proto_goTypes = []any{
 	(*GetDownloadTaskFileResponse)(nil), // 17: go_load.GetDownloadTaskFileResponse
 }
 var file_api_go_load_proto_depIdxs = []int32{
-	2,  // 0: go_load.DownloadTask.of_account:type_name -> go_load.Account
+	2,  // 0: go_load.DownloadTask.of_user:type_name -> go_load.User
 	0,  // 1: go_load.DownloadTask.download_type:type_name -> go_load.DownloadType
 	1,  // 2: go_load.DownloadTask.download_status:type_name -> go_load.DownloadStatus
 	0,  // 3: go_load.CreateDownloadTaskRequest.download_type:type_name -> go_load.DownloadType
 	3,  // 4: go_load.CreateDownloadTaskResponse.download_task:type_name -> go_load.DownloadTask
 	3,  // 5: go_load.GetDownloadTaskListResponse.download_task_list:type_name -> go_load.DownloadTask
 	3,  // 6: go_load.UpdateDownloadTaskResponse.download_task:type_name -> go_load.DownloadTask
-	4,  // 7: go_load.GoLoadService.CreateAccount:input_type -> go_load.CreateAccountRequest
-	6,  // 8: go_load.GoLoadService.CreateSession:input_type -> go_load.CreateSessionRequest
-	8,  // 9: go_load.GoLoadService.CreateDownloadTask:input_type -> go_load.CreateDownloadTaskRequest
-	10, // 10: go_load.GoLoadService.GetDownloadTaskList:input_type -> go_load.GetDownloadTaskListRequest
-	12, // 11: go_load.GoLoadService.UpdateDownloadTask:input_type -> go_load.UpdateDownloadTaskRequest
-	14, // 12: go_load.GoLoadService.DeleteDownloadTask:input_type -> go_load.DeleteDownloadTaskRequest
-	16, // 13: go_load.GoLoadService.GetDownloadTaskFile:input_type -> go_load.GetDownloadTaskFileRequest
-	5,  // 14: go_load.GoLoadService.CreateAccount:output_type -> go_load.CreateAccountResponse
-	7,  // 15: go_load.GoLoadService.CreateSession:output_type -> go_load.CreateSessionResponse
-	9,  // 16: go_load.GoLoadService.CreateDownloadTask:output_type -> go_load.CreateDownloadTaskResponse
-	11, // 17: go_load.GoLoadService.GetDownloadTaskList:output_type -> go_load.GetDownloadTaskListResponse
-	13, // 18: go_load.GoLoadService.UpdateDownloadTask:output_type -> go_load.UpdateDownloadTaskResponse
-	15, // 19: go_load.GoLoadService.DeleteDownloadTask:output_type -> go_load.DeleteDownloadTaskResponse
-	17, // 20: go_load.GoLoadService.GetDownloadTaskFile:output_type -> go_load.GetDownloadTaskFileResponse
-	14, // [14:21] is the sub-list for method output_type
-	7,  // [7:14] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	3,  // 7: go_load.DeleteDownloadTaskRequest.download_task:type_name -> go_load.DownloadTask
+	4,  // 8: go_load.GoLoadService.CreateAccount:input_type -> go_load.CreateAccountRequest
+	6,  // 9: go_load.GoLoadService.CreateSession:input_type -> go_load.CreateSessionRequest
+	8,  // 10: go_load.GoLoadService.CreateDownloadTask:input_type -> go_load.CreateDownloadTaskRequest
+	10, // 11: go_load.GoLoadService.GetDownloadTaskList:input_type -> go_load.GetDownloadTaskListRequest
+	12, // 12: go_load.GoLoadService.UpdateDownloadTask:input_type -> go_load.UpdateDownloadTaskRequest
+	14, // 13: go_load.GoLoadService.DeleteDownloadTask:input_type -> go_load.DeleteDownloadTaskRequest
+	16, // 14: go_load.GoLoadService.GetDownloadTaskFile:input_type -> go_load.GetDownloadTaskFileRequest
+	5,  // 15: go_load.GoLoadService.CreateAccount:output_type -> go_load.CreateAccountResponse
+	7,  // 16: go_load.GoLoadService.CreateSession:output_type -> go_load.CreateSessionResponse
+	9,  // 17: go_load.GoLoadService.CreateDownloadTask:output_type -> go_load.CreateDownloadTaskResponse
+	11, // 18: go_load.GoLoadService.GetDownloadTaskList:output_type -> go_load.GetDownloadTaskListResponse
+	13, // 19: go_load.GoLoadService.UpdateDownloadTask:output_type -> go_load.UpdateDownloadTaskResponse
+	15, // 20: go_load.GoLoadService.DeleteDownloadTask:output_type -> go_load.DeleteDownloadTaskResponse
+	17, // 21: go_load.GoLoadService.GetDownloadTaskFile:output_type -> go_load.GetDownloadTaskFileResponse
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_go_load_proto_init() }
