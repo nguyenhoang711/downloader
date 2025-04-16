@@ -126,7 +126,7 @@ func (DownloadStatus) EnumDescriptor() ([]byte, []int) {
 type Account struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Accountname   string                 `protobuf:"bytes,2,opt,name=accountname,proto3" json:"accountname,omitempty"`
+	AccountName   string                 `protobuf:"bytes,2,opt,name=accountName,proto3" json:"accountName,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -168,9 +168,9 @@ func (x *Account) GetId() uint64 {
 	return 0
 }
 
-func (x *Account) GetAccountname() string {
+func (x *Account) GetAccountName() string {
 	if x != nil {
-		return x.Accountname
+		return x.AccountName
 	}
 	return ""
 }
@@ -253,7 +253,7 @@ func (x *DownloadTask) GetDownloadStatus() DownloadStatus {
 
 type CreateAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Accountname   string                 `protobuf:"bytes,1,opt,name=accountname,proto3" json:"accountname,omitempty"`
+	AccountName   string                 `protobuf:"bytes,1,opt,name=accountName,proto3" json:"accountName,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -289,9 +289,9 @@ func (*CreateAccountRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CreateAccountRequest) GetAccountname() string {
+func (x *CreateAccountRequest) GetAccountName() string {
 	if x != nil {
-		return x.Accountname
+		return x.AccountName
 	}
 	return ""
 }
@@ -349,7 +349,7 @@ func (x *CreateAccountResponse) GetAccountId() uint64 {
 
 type CreateSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Accountname   string                 `protobuf:"bytes,1,opt,name=accountname,proto3" json:"accountname,omitempty"`
+	AccountName   string                 `protobuf:"bytes,1,opt,name=accountName,proto3" json:"accountName,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -385,9 +385,9 @@ func (*CreateSessionRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CreateSessionRequest) GetAccountname() string {
+func (x *CreateSessionRequest) GetAccountName() string {
 	if x != nil {
-		return x.Accountname
+		return x.AccountName
 	}
 	return ""
 }
@@ -962,7 +962,7 @@ const file_api_go_load_proto_rawDesc = "" +
 	"\x11api/go_load.proto\x12\ago_load\x1a\x12api/validate.proto\";\n" +
 	"\aAccount\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\x12 \n" +
-	"\vaccountname\x18\x02 \x01(\tR\vaccountname\"\xdf\x01\n" +
+	"\vaccountName\x18\x02 \x01(\tR\vaccountName\"\xdf\x01\n" +
 	"\fDownloadTask\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\x12/\n" +
 	"\n" +
@@ -971,13 +971,13 @@ const file_api_go_load_proto_rawDesc = "" +
 	"\x03url\x18\x04 \x01(\tR\x03url\x12@\n" +
 	"\x0fdownload_status\x18\x05 \x01(\x0e2\x17.go_load.DownloadStatusR\x0edownloadStatus\"\x8c\x01\n" +
 	"\x14CreateAccountRequest\x12<\n" +
-	"\vaccountname\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountname\x126\n" +
+	"\vaccountName\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
 	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"6\n" +
 	"\x15CreateAccountResponse\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x01 \x01(\x04R\taccountId\"\x8c\x01\n" +
 	"\x14CreateSessionRequest\x12<\n" +
-	"\vaccountname\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountname\x126\n" +
+	"\vaccountName\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
 	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"Y\n" +
 	"\x15CreateSessionResponse\x12*\n" +
 	"\aaccount\x18\x01 \x01(\v2\x10.go_load.AccountR\aaccount\x12\x14\n" +

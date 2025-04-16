@@ -258,7 +258,7 @@
           "type": "string",
           "format": "uint64"
         },
-        "accountname": {
+        "accountName": {
           "type": "string"
         }
       }
@@ -266,7 +266,7 @@
     "go_loadCreateAccountRequest": {
       "type": "object",
       "properties": {
-        "accountname": {
+        "accountName": {
           "type": "string"
         },
         "password": {
@@ -308,7 +308,7 @@
     "go_loadCreateSessionRequest": {
       "type": "object",
       "properties": {
-        "accountname": {
+        "accountName": {
           "type": "string"
         },
         "password": {

@@ -15,10 +15,15 @@ type Server interface {
 }
 
 type server struct {
+	handler go_load.GoLoadServiceServer
 }
 
-func NewServer() Server {
-	return &server{}
+func NewServer(
+	handler go_load.GoLoadServiceServer,
+) Server {
+	return &server{
+		handler: handler,
+	}
 }
 
 func (s *server) Start(ctx context.Context) error {

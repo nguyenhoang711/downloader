@@ -58,7 +58,7 @@ func (m *Account) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Accountname
+	// no validation rules for AccountName
 
 	if len(errors) > 0 {
 		return AccountMultiError(errors)
@@ -295,9 +295,9 @@ func (m *CreateAccountRequest) validate(all bool) error {
 
 	var errors []error
 
-	if !_CreateAccountRequest_Accountname_Pattern.MatchString(m.GetAccountname()) {
+	if !_CreateAccountRequest_AccountName_Pattern.MatchString(m.GetAccountName()) {
 		err := CreateAccountRequestValidationError{
-			field:  "Accountname",
+			field:  "AccountName",
 			reason: "value does not match regex pattern \"^[a-zA-Z0-9]{6,32}$\"",
 		}
 		if !all {
@@ -397,7 +397,7 @@ var _ interface {
 	ErrorName() string
 } = CreateAccountRequestValidationError{}
 
-var _CreateAccountRequest_Accountname_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
+var _CreateAccountRequest_AccountName_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
 
 var _CreateAccountRequest_Password_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
 
@@ -527,9 +527,9 @@ func (m *CreateSessionRequest) validate(all bool) error {
 
 	var errors []error
 
-	if !_CreateSessionRequest_Accountname_Pattern.MatchString(m.GetAccountname()) {
+	if !_CreateSessionRequest_AccountName_Pattern.MatchString(m.GetAccountName()) {
 		err := CreateSessionRequestValidationError{
-			field:  "Accountname",
+			field:  "AccountName",
 			reason: "value does not match regex pattern \"^[a-zA-Z0-9]{6,32}$\"",
 		}
 		if !all {
@@ -629,7 +629,7 @@ var _ interface {
 	ErrorName() string
 } = CreateSessionRequestValidationError{}
 
-var _CreateSessionRequest_Accountname_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
+var _CreateSessionRequest_AccountName_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
 
 var _CreateSessionRequest_Password_Pattern = regexp.MustCompile("^[a-zA-Z0-9]{6,32}$")
 
