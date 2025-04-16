@@ -13,7 +13,7 @@ type Account struct {
 }
 
 type AccountDataAccessor interface {
-	CreateAccount(context.Context, Account) error
+	CreateAccount(context.Context, Account) (uint64, error)
 	GetAccountByID(context.Context, uint64) (Account, error)
 	GetAccountByAccountName(ctx context.Context, accname string) (Account, error)
 }
@@ -31,17 +31,24 @@ func NewAccountDataAccessor(
 }
 
 // CreateAccount implements AccountDataAccessor.
-func (a *accountDataAccessor) CreateAccount(ctx context.Context, acc Account) error {
-	if _, err := a.database.
+func (a *accountDataAccessor) CreateAccount(ctx context.Context, acc Account) (uint64, error) {
+	result, err := a.database.
 		Insert("accounts").
 		Rows(goqu.Record{
 			"accountname": acc.AccountName,
 		}).
 		Executor().
-		ExecContext(ctx); err != nil {
-		log.Printf("failed to create account, err= %+v", err)
+		ExecContext(ctx)
+	if err != nil {
+		log.Printf("failed to create account, err=%+v\n", err)
+		return 0, err
 	}
-	return nil
+	lastInsertedID, err := result.LastInsertId()
+	if err != nil {
+		log.Printf("failed to get last inserted id, err=%+v\n", err)
+		return 0, err
+	}
+	return uint64(lastInsertedID), err
 }
 
 // GetAccountByAccountName implements AccountDataAccessor.

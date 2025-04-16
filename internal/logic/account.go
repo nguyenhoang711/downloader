@@ -4,13 +4,20 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 
+	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
 )
 
 type CreateAccountParams struct {
-	Username string
-	Password string
+	AccountName string
+	Password    string
+}
+
+type CreateAccountOutput struct {
+	AccountName string
+	ID          uint64
 }
 
 type CreateSessionParams struct {
@@ -29,16 +36,29 @@ type Session struct {
 }
 
 type Account interface {
-	CreateAccount(context.Context, CreateAccountParams) (User, error)
+	CreateAccount(context.Context, CreateAccountParams) (CreateAccountOutput, error)
 	CreateSession(context.Context, CreateSessionParams) (Session, error)
 }
 
 type account struct {
-	accDataAccessor database.AccountDataAccessor
+	goquDatabase        *goqu.Database
+	accDataAccessor     database.AccountDataAccessor
+	accPassDataAccessor database.AccountPasswordDataAccessor
+	hashLogic           Hash
 }
 
-func NewAccount() Account {
-	return &account{}
+func NewAccount(
+	goquDatabase *goqu.Database,
+	accDataAccessor database.AccountDataAccessor,
+	accPassDataAccessor database.AccountPasswordDataAccessor,
+	hashLogic Hash,
+) Account {
+	return &account{
+		accDataAccessor:     accDataAccessor,
+		accPassDataAccessor: accPassDataAccessor,
+		hashLogic:           hashLogic,
+		goquDatabase:        goquDatabase,
+	}
 }
 
 func (a account) isAccountnameTaken(ctx context.Context, accountName string) (bool, error) {
@@ -52,23 +72,50 @@ func (a account) isAccountnameTaken(ctx context.Context, accountName string) (bo
 }
 
 // CreateAccount implements Account.
-func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (User, error) {
-	isAccountNameTaken, err := a.isAccountnameTaken(ctx, params.Username)
-	if err != nil {
-		return User{}, nil
+func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (CreateAccountOutput, error) {
+	var accountID uint64
+	txErr := a.goquDatabase.WithTx(func(td *goqu.TxDatabase) error {
+		isAccountNameTaken, err := a.isAccountnameTaken(ctx, params.AccountName)
+		if err != nil {
+			return nil
+		}
+
+		if isAccountNameTaken {
+			return errors.New("accountname is already taken")
+		}
+
+		accountID, err = a.accDataAccessor.CreateAccount(ctx, database.Account{
+			AccountName: params.AccountName,
+		})
+		if err != nil {
+			return err
+		}
+
+		// create hashed password
+		encryptedPass, err := a.hashLogic.Hash(ctx, params.Password)
+		if err != nil {
+			log.Printf("error when encrypt password, err=%+v\n", err)
+			return err
+		}
+		// create database interface for general use
+		if err := a.accPassDataAccessor.WithDatabase(td).CreateAccountPassword(ctx, database.AccountPassword{
+			OfAccountID: accountID,
+			Hash:        encryptedPass,
+		}); err != nil {
+			log.Printf("create password is wrong with err=%+v\n", err)
+			return err
+		}
+		return nil
+	})
+
+	if txErr != nil {
+		return CreateAccountOutput{}, txErr
 	}
 
-	if isAccountNameTaken {
-		return User{}, errors.New("accountname is already taken")
-	}
-
-	if err := a.accDataAccessor.CreateAccount(ctx, database.Account{
-		AccountName: params.Username,
-	}); err != nil {
-		return User{}, err
-	}
-
-	return User{}, nil
+	return CreateAccountOutput{
+		ID:          accountID,
+		AccountName: params.AccountName,
+	}, nil
 }
 
 // CreateSession implements Account.
