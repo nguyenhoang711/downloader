@@ -7,7 +7,10 @@ import (
 	"log"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/nguyenhoang711/downloader/internal/dataaccess/cache"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
+	"github.com/nguyenhoang711/downloader/internal/utils"
+	"go.uber.org/zap"
 )
 
 type CreateAccountParams struct {
@@ -41,11 +44,13 @@ type Account interface {
 }
 
 type account struct {
-	goquDatabase        *goqu.Database
-	accDataAccessor     database.AccountDataAccessor
-	accPassDataAccessor database.AccountPasswordDataAccessor
-	hashLogic           Hash
-	tokenLogic          Token
+	takenAccountNameCache cache.TakenAccountName
+	goquDatabase          *goqu.Database
+	accDataAccessor       database.AccountDataAccessor
+	accPassDataAccessor   database.AccountPasswordDataAccessor
+	hashLogic             Hash
+	tokenLogic            Token
+	logger                *zap.Logger
 }
 
 func NewAccount(
@@ -54,23 +59,43 @@ func NewAccount(
 	accPassDataAccessor database.AccountPasswordDataAccessor,
 	hashLogic Hash,
 	tokenLogic Token,
+	takenNameCache cache.TakenAccountName,
+	logger *zap.Logger,
 ) Account {
 	return &account{
-		accDataAccessor:     accDataAccessor,
-		accPassDataAccessor: accPassDataAccessor,
-		hashLogic:           hashLogic,
-		goquDatabase:        goquDatabase,
-		tokenLogic:          tokenLogic,
+		accDataAccessor:       accDataAccessor,
+		accPassDataAccessor:   accPassDataAccessor,
+		hashLogic:             hashLogic,
+		goquDatabase:          goquDatabase,
+		tokenLogic:            tokenLogic,
+		takenAccountNameCache: takenNameCache,
+		logger:                logger,
 	}
 }
 
 func (a account) isAccountnameTaken(ctx context.Context, accountName string) (bool, error) {
+	logger := utils.LoggerWithContext(ctx, a.logger).With(zap.String("account_name", accountName))
+
+	// get account name from cache
+	accountNameTaken, err := a.takenAccountNameCache.Has(ctx, accountName)
+	if err != nil {
+		logger.With(zap.Error(err)).Warn("failed to get account name from taken set in cache, will fall back to database")
+	} else {
+		return accountNameTaken, nil
+	}
+
+	// query to database
 	if _, err := a.accDataAccessor.GetAccountByAccountName(ctx, accountName); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
 		return false, err
 	}
+
+	if err := a.takenAccountNameCache.Add(ctx, accountName); err != nil {
+		logger.With(zap.Error(err)).Warn("failed to set account name into taken set in cache")
+	}
+
 	return true, nil
 }
 

@@ -5,6 +5,7 @@ package wiring
 
 import (
 	"github.com/google/wire"
+	"github.com/nguyenhoang711/downloader/internal/app"
 	"github.com/nguyenhoang711/downloader/internal/configs"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess"
 	"github.com/nguyenhoang711/downloader/internal/handler"
@@ -19,9 +20,10 @@ var wireSet = wire.NewSet(
 	handler.WireSet,
 	logic.WireSet,
 	utils.WireSet,
+	app.WireSet,
 )
 
-func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
+func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
 	wire.Build(wireSet)
 
 	return nil, nil, nil
