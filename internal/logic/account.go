@@ -21,8 +21,8 @@ type CreateAccountOutput struct {
 }
 
 type CreateSessionParams struct {
-	Username string
-	Password string
+	AccountName string
+	Password    string
 }
 
 type User struct {
@@ -37,7 +37,7 @@ type Session struct {
 
 type Account interface {
 	CreateAccount(context.Context, CreateAccountParams) (CreateAccountOutput, error)
-	CreateSession(context.Context, CreateSessionParams) (Session, error)
+	CreateSession(context.Context, CreateSessionParams) (token string, err error)
 }
 
 type account struct {
@@ -45,6 +45,7 @@ type account struct {
 	accDataAccessor     database.AccountDataAccessor
 	accPassDataAccessor database.AccountPasswordDataAccessor
 	hashLogic           Hash
+	tokenLogic          Token
 }
 
 func NewAccount(
@@ -52,12 +53,14 @@ func NewAccount(
 	accDataAccessor database.AccountDataAccessor,
 	accPassDataAccessor database.AccountPasswordDataAccessor,
 	hashLogic Hash,
+	tokenLogic Token,
 ) Account {
 	return &account{
 		accDataAccessor:     accDataAccessor,
 		accPassDataAccessor: accPassDataAccessor,
 		hashLogic:           hashLogic,
 		goquDatabase:        goquDatabase,
+		tokenLogic:          tokenLogic,
 	}
 }
 
@@ -119,6 +122,25 @@ func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) 
 }
 
 // CreateSession implements Account.
-func (a *account) CreateSession(context.Context, CreateSessionParams) (Session, error) {
-	panic("unimplemented")
+func (a account) CreateSession(ctx context.Context, params CreateSessionParams) (token string, err error) {
+	// check tai khoan ton tai
+	existingAccount, err := a.accDataAccessor.GetAccountByAccountName(ctx, params.AccountName)
+	if err != nil {
+		return "", err
+	}
+	// kiem tra password ton tai
+	existingAccPass, err := a.accPassDataAccessor.GetAccountPassword(ctx, existingAccount.ID)
+	if err != nil {
+		return "", err
+	}
+	// kiem tra hash bang nhau ko
+	isHashEqual, err := a.hashLogic.IsHashEqual(ctx, params.Password, existingAccPass.Hash)
+	if err != nil {
+		return "", err
+	}
+
+	if !isHashEqual {
+		return "", errors.New("password is not correct")
+	}
+	return "", nil
 }

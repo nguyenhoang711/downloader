@@ -10,6 +10,7 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/handler"
 	"github.com/nguyenhoang711/downloader/internal/handler/grpc"
 	"github.com/nguyenhoang711/downloader/internal/logic"
+	"github.com/nguyenhoang711/downloader/internal/utils"
 )
 
 var wireSet = wire.NewSet(
@@ -17,6 +18,7 @@ var wireSet = wire.NewSet(
 	dataaccess.WireSet,
 	handler.WireSet,
 	logic.WireSet,
+	utils.WireSet,
 )
 
 func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
