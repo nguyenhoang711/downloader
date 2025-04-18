@@ -15,13 +15,14 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
 	"github.com/nguyenhoang711/downloader/internal/handler"
 	"github.com/nguyenhoang711/downloader/internal/handler/grpc"
+	"github.com/nguyenhoang711/downloader/internal/handler/http"
 	"github.com/nguyenhoang711/downloader/internal/logic"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 )
 
 // Injectors from wire.go:
 
-func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
+func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Server, func(), error) {
 	config, err := configs.NewConfig(configFilePath)
 	if err != nil {
 		return nil, nil, err
@@ -44,12 +45,7 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (grpc.Ser
 	hash := logic.NewHash(auth)
 	tokenPublicKeyDataAccessor := database.NewTokenPublicKeyDataAccessor(goquDatabase, logger)
 	configsCache := config.Cache
-	client, err := cache.NewClient(configsCache, logger)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
+	client := cache.NewClient(configsCache, logger)
 	tokenPublicKey := cache.NewTokenPublicKey(client, logger)
 	token, err := logic.NewToken(accountDataAccessor, tokenPublicKeyDataAccessor, auth, logger, tokenPublicKey)
 	if err != nil {
@@ -60,8 +56,13 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (grpc.Ser
 	takenAccountName := cache.NewTakenAccountName(client, logger)
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash, token, takenAccountName, logger)
 	goLoadServiceServer := grpc.NewHandler(account)
-	server := grpc.NewServer(goLoadServiceServer)
-	return server, func() {
+	configsGRPC := config.GRPC
+	server := grpc.NewServer(goLoadServiceServer, configsGRPC, logger)
+	configsHTTP := config.HTTP
+	httpServer := http.NewServer(configsGRPC, configsHTTP, logger)
+	migrator := database.NewMigrator(db, logger)
+	appServer := app.NewServer(server, httpServer, logger, migrator)
+	return appServer, func() {
 		cleanup2()
 		cleanup()
 	}, nil

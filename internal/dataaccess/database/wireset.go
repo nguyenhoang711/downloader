@@ -10,4 +10,5 @@ var WireSet = wire.NewSet(
 	NewAccountDataAccessor,
 	NewAccountPasswordDataAccesor,
 	NewTokenPublicKeyDataAccessor,
+	NewMigrator,
 )

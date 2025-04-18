@@ -2,12 +2,14 @@ package grpc
 
 import (
 	"context"
-	"net/http"
+	"net"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
+	"github.com/nguyenhoang711/downloader/internal/configs"
 	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	"github.com/nguyenhoang711/downloader/internal/utils"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Server interface {
@@ -15,28 +17,42 @@ type Server interface {
 }
 
 type server struct {
-	handler go_load.GoLoadServiceServer
+	handler    go_load.GoLoadServiceServer
+	grpcConfig configs.GRPC
+	logger     *zap.Logger
 }
 
 func NewServer(
 	handler go_load.GoLoadServiceServer,
+	grpcConfig configs.GRPC,
+	logger *zap.Logger,
 ) Server {
 	return &server{
-		handler: handler,
+		handler:    handler,
+		grpcConfig: grpcConfig,
+		logger:     logger,
 	}
 }
 
 func (s *server) Start(ctx context.Context) error {
-	mux := runtime.NewServeMux()
-	if err := go_load.RegisterGoLoadServiceHandlerFromEndpoint(
-		ctx,
-		mux,
-		"0.0.0.0:8080",
-		[]grpc.DialOption{
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		}); err != nil {
+	logger := utils.LoggerWithContext(ctx, s.logger)
+
+	listener, err := net.Listen("tcp", s.grpcConfig.Address)
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to open tcp listener")
 		return err
 	}
+	defer listener.Close()
 
-	return http.ListenAndServe(":8080", mux) // port HTTP server
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			validator.UnaryServerInterceptor(),
+		),
+		grpc.ChainStreamInterceptor(
+			validator.StreamServerInterceptor(),
+		),
+	)
+	go_load.RegisterGoLoadServiceServer(server, s.handler)
+	logger.With(zap.String("address", s.grpcConfig.Address)).Info("starting grpc server")
+	return server.Serve(listener) // port HTTP server
 }

@@ -2,12 +2,13 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -58,12 +59,12 @@ func (a accountDataAccessor) CreateAccount(ctx context.Context, acc Account) (ui
 	if err != nil {
 		log.Printf("failed to create account, err=%+v\n", err)
 		logger.With(zap.Error(err)).Error("failed to create account")
-		return 0, err
+		return 0, status.Errorf(codes.Internal, "failed to create account: %+v", err)
 	}
 	lastInsertedID, err := result.LastInsertId()
 	if err != nil {
 		logger.With(zap.Error(err)).Error("failed to get last inserted id")
-		return 0, err
+		return 0, status.Errorf(codes.Internal, "failed to get account id: %+v", err)
 	}
 	return uint64(lastInsertedID), err
 }
@@ -83,7 +84,7 @@ func (a accountDataAccessor) GetAccountByAccountName(ctx context.Context, accnam
 
 	if !found {
 		logger.Warn("cannot find account with account name")
-		return Account{}, sql.ErrNoRows
+		return Account{}, status.Errorf(codes.Internal, "failed to get account by name: %+v", err)
 	}
 
 	return account, nil
@@ -104,7 +105,7 @@ func (a accountDataAccessor) GetAccountByID(ctx context.Context, acc_id uint64) 
 
 	if !found {
 		logger.Warn("cannot find account with account id")
-		return Account{}, sql.ErrNoRows
+		return Account{}, status.Errorf(codes.Internal, "failed to get account by id: %+v", err)
 	}
 
 	return account, nil

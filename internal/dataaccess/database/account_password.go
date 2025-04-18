@@ -2,11 +2,12 @@ package database
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -55,7 +56,7 @@ func (a accountPasswordDataAccessor) CreateAccountPassword(ctx context.Context, 
 		ExecContext(ctx)
 	if err != nil {
 		log.With(zap.Error(err)).Error("fail to save account password")
-		return err
+		return status.Errorf(codes.Internal, "failed to create account password: %+v", err)
 	}
 
 	return nil
@@ -73,7 +74,7 @@ func (a accountPasswordDataAccessor) UpdateAccountPassword(ctx context.Context, 
 		ExecContext(ctx)
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to update password")
-		return err
+		return status.Errorf(codes.Internal, "failed to update account password: %+v", err)
 	}
 	return nil
 }
@@ -86,7 +87,10 @@ func (a accountPasswordDataAccessor) WithDatabase(database Database) AccountPass
 }
 
 // GetAccountPassword implements AccountPasswordDataAccessor.
-func (a accountPasswordDataAccessor) GetAccountPassword(ctx context.Context, ofAccountID uint64) (AccountPassword, error) {
+func (a accountPasswordDataAccessor) GetAccountPassword(
+	ctx context.Context,
+	ofAccountID uint64,
+) (AccountPassword, error) {
 	logger := utils.LoggerWithContext(ctx, a.logger).With(zap.Uint64("of_account_id", ofAccountID))
 
 	accountPass := AccountPassword{}
@@ -100,11 +104,11 @@ func (a accountPasswordDataAccessor) GetAccountPassword(ctx context.Context, ofA
 
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to get account password by account id")
-		return AccountPassword{}, err
+		return AccountPassword{}, status.Errorf(codes.Internal, "failed to get password by account id: %+v", err)
 	}
 	if !found {
 		logger.Warn("cannot get account password by account id")
-		return AccountPassword{}, sql.ErrNoRows
+		return AccountPassword{}, status.Errorf(codes.Internal, "cannot find password via account id: %+v", err)
 	}
 
 	return accountPass, nil

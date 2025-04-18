@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/cache"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type CreateAccountParams struct {
@@ -102,16 +103,15 @@ func (a account) isAccountnameTaken(ctx context.Context, accountName string) (bo
 // CreateAccount implements Account.
 func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (CreateAccountOutput, error) {
 	var accountID uint64
+	accountNameTaken, err := a.isAccountnameTaken(ctx, params.AccountName)
+	if err != nil {
+		return CreateAccountOutput{}, status.Errorf(codes.Internal, "failed to check if account name is taken")
+	}
+
+	if accountNameTaken {
+		return CreateAccountOutput{}, status.Error(codes.AlreadyExists, "account name is already taken")
+	}
 	txErr := a.goquDatabase.WithTx(func(td *goqu.TxDatabase) error {
-		isAccountNameTaken, err := a.isAccountnameTaken(ctx, params.AccountName)
-		if err != nil {
-			return nil
-		}
-
-		if isAccountNameTaken {
-			return errors.New("accountname is already taken")
-		}
-
 		accountID, err = a.accDataAccessor.CreateAccount(ctx, database.Account{
 			AccountName: params.AccountName,
 		})
@@ -120,17 +120,15 @@ func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) 
 		}
 
 		// create hashed password
-		encryptedPass, err := a.hashLogic.Hash(ctx, params.Password)
-		if err != nil {
-			log.Printf("error when encrypt password, err=%+v\n", err)
-			return err
+		hashPassword, hashErr := a.hashLogic.Hash(ctx, params.Password)
+		if hashErr != nil {
+			return hashErr
 		}
 		// create database interface for general use
 		if err := a.accPassDataAccessor.WithDatabase(td).CreateAccountPassword(ctx, database.AccountPassword{
 			OfAccountID: accountID,
-			Hash:        encryptedPass,
+			Hash:        hashPassword,
 		}); err != nil {
-			log.Printf("create password is wrong with err=%+v\n", err)
 			return err
 		}
 		return nil
@@ -147,7 +145,7 @@ func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) 
 }
 
 // CreateSession implements Account.
-func (a account) CreateSession(ctx context.Context, params CreateSessionParams) (token string, err error) {
+func (a account) CreateSession(ctx context.Context, params CreateSessionParams) (string, error) {
 	// check tai khoan ton tai
 	existingAccount, err := a.accDataAccessor.GetAccountByAccountName(ctx, params.AccountName)
 	if err != nil {
@@ -165,7 +163,13 @@ func (a account) CreateSession(ctx context.Context, params CreateSessionParams) 
 	}
 
 	if !isHashEqual {
-		return "", errors.New("password is not correct")
+		return "", status.Error(codes.Unauthenticated, "incorrect password")
 	}
-	return "", nil
+
+	token, _, err := a.tokenLogic.GetToken(ctx, existingAccount.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }

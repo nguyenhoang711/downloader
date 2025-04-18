@@ -9,7 +9,6 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/configs"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess"
 	"github.com/nguyenhoang711/downloader/internal/handler"
-	"github.com/nguyenhoang711/downloader/internal/handler/grpc"
 	"github.com/nguyenhoang711/downloader/internal/logic"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 )
@@ -23,7 +22,7 @@ var wireSet = wire.NewSet(
 	app.WireSet,
 )
 
-func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
+func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Server, func(), error) {
 	wire.Build(wireSet)
 
 	return nil, nil, nil

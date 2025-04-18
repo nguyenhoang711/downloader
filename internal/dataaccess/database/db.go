@@ -37,7 +37,7 @@ type Database interface {
 	Update(table interface{}) *goqu.UpdateDataset
 }
 
-func InitializeDB(dbConfig configs.Database) (db *sql.DB, cleanup func(), err error) {
+func InitializeDB(dbConfig configs.Database) (*sql.DB, func(), error) {
 	// Format: username:password@tcp(host:port)/dbname?parseTime=true
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
 		dbConfig.Username,
@@ -47,12 +47,12 @@ func InitializeDB(dbConfig configs.Database) (db *sql.DB, cleanup func(), err er
 		dbConfig.Database,
 	)
 
-	db, err = sql.Open("mysql", connectionString)
+	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		log.Printf("error connecting to the database: %v\n", err)
 		return nil, nil, err
 	}
-	cleanup = func() {
+	cleanup := func() {
 		db.Close()
 	}
 	return db, cleanup, nil

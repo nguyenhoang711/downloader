@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 
+	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +33,9 @@ func NewTakenAccountName(
 
 // Add implements TakenAccountName.
 func (t takenAccountName) Add(ctx context.Context, accountName string) error {
+	logger := utils.LoggerWithContext(ctx, t.logger).With(zap.String("account_name", accountName))
 	if err := t.client.AddToSet(ctx, setKeyNameTakenAccountName, accountName); err != nil {
+		logger.With(zap.Error(err)).Error("failed to add account name to set in cache")
 		return err
 	}
 	return nil
@@ -40,5 +43,11 @@ func (t takenAccountName) Add(ctx context.Context, accountName string) error {
 
 // Has implements TakenAccountName.
 func (t takenAccountName) Has(ctx context.Context, accountName string) (bool, error) {
-	return t.client.IsDataInSet(ctx, setKeyNameTakenAccountName, accountName)
+	xLogger := utils.LoggerWithContext(ctx, t.logger).With(zap.String("account_name", accountName))
+	res, err := t.client.IsDataInSet(ctx, setKeyNameTakenAccountName, accountName)
+	if err != nil {
+		xLogger.With(zap.Error(err)).Error("failed to fetch account name in redis")
+		return false, err
+	}
+	return res, nil
 }
