@@ -985,7 +985,7 @@ const file_api_go_load_proto_rawDesc = "" +
 	"\x19CreateDownloadTaskRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12:\n" +
 	"\rdownload_type\x18\x02 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x1a\n" +
-	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
+	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xd0\x0fR\x03url\"X\n" +
 	"\x1aCreateDownloadTaskResponse\x12:\n" +
 	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"i\n" +
 	"\x1aGetDownloadTaskListRequest\x12\x14\n" +

@@ -28,17 +28,17 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 		return nil, nil, err
 	}
 	configsDatabase := config.Database
-	db, cleanup, err := database.InitializeDB(configsDatabase)
+	log := config.Log
+	logger, cleanup, err := utils.InitializeLogger(log)
 	if err != nil {
 		return nil, nil, err
 	}
-	goquDatabase := database.InitializeGoquDB(db)
-	log := config.Log
-	logger, cleanup2, err := utils.InitializeLogger(log)
+	db, cleanup2, err := database.InitializeAndMigrateUpDB(configsDatabase, logger)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
+	goquDatabase := database.InitializeGoquDB(db)
 	accountDataAccessor := database.NewAccountDataAccessor(goquDatabase, logger)
 	accountPasswordDataAccessor := database.NewAccountPasswordDataAccesor(goquDatabase, logger)
 	auth := config.Auth
@@ -55,13 +55,14 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	}
 	takenAccountName := cache.NewTakenAccountName(client, logger)
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash, token, takenAccountName, logger)
-	goLoadServiceServer := grpc.NewHandler(account)
+	downloadTaskDataAccessor := database.NewDownloadTaskDataAccessor(goquDatabase, logger)
+	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, goquDatabase, logger)
+	goLoadServiceServer := grpc.NewHandler(account, downloadTaskLogic)
 	configsGRPC := config.GRPC
 	server := grpc.NewServer(goLoadServiceServer, configsGRPC, logger)
 	configsHTTP := config.HTTP
 	httpServer := http.NewServer(configsGRPC, configsHTTP, logger)
-	migrator := database.NewMigrator(db, logger)
-	appServer := app.NewServer(server, httpServer, logger, migrator)
+	appServer := app.NewServer(server, httpServer, logger)
 	return appServer, func() {
 		cleanup2()
 		cleanup()

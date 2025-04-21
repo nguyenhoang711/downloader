@@ -10,15 +10,18 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var (
+	TabNameTokenPublicKeys = goqu.T("token_public_keys")
+)
+
 const (
-	TabNameTokenPublicKeys          = "token_public_keys"
 	ColNameTokenPublicKeysID        = "id"
 	ColNameTokenPublicKeysPublicKey = "public_key"
 )
 
 type TokenPublicKey struct {
-	ID        uint64 `sql:"id"`
-	PublicKey []byte `sql:"public_key"`
+	ID        uint64 `db:"id"`
+	PublicKey string `db:"public_key"`
 }
 
 type TokenPublicKeyDataAccessor interface {
@@ -43,7 +46,10 @@ func NewTokenPublicKeyDataAccessor(
 }
 
 // CreatePublicKey implements TokenPublicKeyDataAccessor.
-func (t tokenPublicKeyDataAccessor) CreatePublicKey(ctx context.Context, tokenPublicKey TokenPublicKey) (uint64, error) {
+func (t tokenPublicKeyDataAccessor) CreatePublicKey(
+	ctx context.Context,
+	tokenPublicKey TokenPublicKey,
+) (uint64, error) {
 	logger := utils.LoggerWithContext(ctx, t.logger)
 	result, err := t.database.
 		Insert(TabNameTokenPublicKeys).

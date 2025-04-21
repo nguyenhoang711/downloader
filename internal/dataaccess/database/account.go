@@ -11,8 +11,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var (
+	TabNameAccounts = goqu.T("accounts")
+)
+
 const (
-	TabNameAccounts            = "accounts"
 	ColNameAccountsID          = "id"
 	ColNameAccountsAccountName = "account_name"
 )
@@ -46,7 +49,6 @@ func NewAccountDataAccessor(
 
 // CreateAccount implements AccountDataAccessor.
 func (a accountDataAccessor) CreateAccount(ctx context.Context, acc Account) (uint64, error) {
-
 	logger := utils.LoggerWithContext(ctx, a.logger)
 
 	result, err := a.database.

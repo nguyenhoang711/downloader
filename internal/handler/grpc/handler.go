@@ -9,14 +9,17 @@ import (
 
 type Handler struct {
 	go_load.UnimplementedGoLoadServiceServer
-	accountLogic logic.Account
+	accountLogic      logic.Account
+	downloadTaskLogic logic.DownloadTaskLogic
 }
 
 func NewHandler(
 	accountLogic logic.Account,
+	downloadTaskLogic logic.DownloadTaskLogic,
 ) go_load.GoLoadServiceServer {
 	return &Handler{
-		accountLogic: accountLogic,
+		accountLogic:      accountLogic,
+		downloadTaskLogic: downloadTaskLogic,
 	}
 }
 
