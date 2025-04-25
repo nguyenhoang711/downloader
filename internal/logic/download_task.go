@@ -150,7 +150,24 @@ func (d downloadTask) CreateDownloadTask(
 
 // DeleteDownloadTask implements DownloadTaskLogic.
 func (d downloadTask) DeleteDownloadTask(ctx context.Context, params DeleteDownloadTaskParams) error {
-	panic("unimplemented")
+	accountID, _, err := d.tokenLogic.GetAccountIDAndExpireTime(ctx, params.Token)
+	if err != nil {
+		return err
+	}
+
+	return d.goquDatabase.WithTx(func(td *goqu.TxDatabase) error {
+		downloadTask, getDownloadTaskWithXLockErr := d.downloadTaskDataAccessor.WithDatabase(td).
+			GetDownloadTaskWithXLock(ctx, params.DownloadTaskID)
+		if getDownloadTaskWithXLockErr != nil {
+			return getDownloadTaskWithXLockErr
+		}
+
+		if downloadTask.OfAccountID != accountID {
+			return status.Error(codes.PermissionDenied, "trying to delete a download task the account does not own")
+		}
+
+		return d.downloadTaskDataAccessor.WithDatabase(td).DeleteDownloadTask(ctx, params.DownloadTaskID)
+	})
 }
 
 // GetDownloadTaskList implements DownloadTaskLogic.
