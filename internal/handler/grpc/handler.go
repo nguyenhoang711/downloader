@@ -46,7 +46,18 @@ func (a *Handler) CreateDownloadTask(
 	ctx context.Context,
 	request *go_load.CreateDownloadTaskRequest,
 ) (*go_load.CreateDownloadTaskResponse, error) {
-	panic("unimplemented")
+	output, err := a.downloadTaskLogic.CreateDownloadTask(ctx, logic.CreateDownloadTaskParams{
+		Token:        request.GetToken(),
+		DownloadType: request.GetDownloadType(),
+		URL:          request.GetUrl(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &go_load.CreateDownloadTaskResponse{
+		DownloadTask: &output.DownloadTask,
+	}, nil
 }
 
 // CreateSession implements go_load.GoLoadServiceServer.
@@ -54,7 +65,17 @@ func (a *Handler) CreateSession(
 	ctx context.Context,
 	request *go_load.CreateSessionRequest,
 ) (*go_load.CreateSessionResponse, error) {
-	panic("unimplemented")
+	token, err := a.accountLogic.CreateSession(ctx, logic.CreateSessionParams{
+		AccountName: request.GetAccountName(),
+		Password:    request.GetPassword(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &go_load.CreateSessionResponse{
+		Token: token,
+	}, nil
 }
 
 // DeleteDownloadTask implements go_load.GoLoadServiceServer.

@@ -13,7 +13,10 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/dataaccess"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/cache"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
+	"github.com/nguyenhoang711/downloader/internal/dataaccess/mq/consumer"
+	"github.com/nguyenhoang711/downloader/internal/dataaccess/mq/producer"
 	"github.com/nguyenhoang711/downloader/internal/handler"
+	"github.com/nguyenhoang711/downloader/internal/handler/consumers"
 	"github.com/nguyenhoang711/downloader/internal/handler/grpc"
 	"github.com/nguyenhoang711/downloader/internal/handler/http"
 	"github.com/nguyenhoang711/downloader/internal/logic"
@@ -45,7 +48,7 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	hash := logic.NewHash(auth)
 	tokenPublicKeyDataAccessor := database.NewTokenPublicKeyDataAccessor(goquDatabase, logger)
 	configsCache := config.Cache
-	client := cache.NewClient(configsCache, logger)
+	client := cache.NewRedisClient(configsCache, logger)
 	tokenPublicKey := cache.NewTokenPublicKey(client, logger)
 	token, err := logic.NewToken(accountDataAccessor, tokenPublicKeyDataAccessor, auth, logger, tokenPublicKey)
 	if err != nil {
@@ -56,13 +59,30 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	takenAccountName := cache.NewTakenAccountName(client, logger)
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash, token, takenAccountName, logger)
 	downloadTaskDataAccessor := database.NewDownloadTaskDataAccessor(goquDatabase, logger)
-	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, goquDatabase, logger)
+	mq := config.MQ
+	producerClient, err := producer.NewClient(logger, mq)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	downloadTaskCreatedProducer := producer.NewDownloadTaskCreatedProducer(producerClient, logger)
+	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, goquDatabase, logger, downloadTaskCreatedProducer)
 	goLoadServiceServer := grpc.NewHandler(account, downloadTaskLogic)
 	configsGRPC := config.GRPC
 	server := grpc.NewServer(goLoadServiceServer, configsGRPC, logger)
 	configsHTTP := config.HTTP
 	httpServer := http.NewServer(configsGRPC, configsHTTP, logger)
-	appServer := app.NewServer(server, httpServer, logger)
+	downloadTaskCreated := consumers.NewDownloadTaskCreated(logger)
+	consumerConsumer, err := consumer.NewConsumer(mq, logger)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	rootConsumer := consumers.NewRootConsumer(downloadTaskCreated, consumerConsumer, logger)
+	migrator := database.NewMigrator(db, logger)
+	appServer := app.NewServer(server, httpServer, rootConsumer, migrator, logger)
 	return appServer, func() {
 		cleanup2()
 		cleanup()
