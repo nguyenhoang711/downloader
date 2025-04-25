@@ -14,13 +14,13 @@ type DownloadTask struct {
 	DownloadType   go_load.DownloadType   `db:"download_type"`
 	URL            string                 `db:"url"`
 	DownloadStatus go_load.DownloadStatus `db:"download_status"`
-	Metadata       string                 `db:"metadata"`
+	Metadata       JSON                   `db:"metadata"`
 }
 
 type DownloadTaskDataAccessor interface {
 	CreateDownloadTask(ctx context.Context, task DownloadTask) (uint64, error)
-	GetDownloadTaskListOfUser(ctx context.Context, userID, offset, limit uint64) ([]DownloadTask, error)
-	GetDownloadTaskCountOfUser(ctx context.Context, userID uint64) (uint64, error)
+	GetDownloadTaskListOfAccount(ctx context.Context, userID, offset, limit uint64) ([]DownloadTask, error)
+	GetDownloadTaskCountOfAccount(ctx context.Context, userID uint64) (uint64, error)
 	UpdateDownloadTask(ctx context.Context, task DownloadTask) error
 	DeleteDownloadTask(ctx context.Context, id uint64) error
 	WithDatabase(database Database) DownloadTaskDataAccessor
@@ -52,12 +52,12 @@ func (d *downloadTaskDataAccessor) DeleteDownloadTask(ctx context.Context, id ui
 }
 
 // GetDownloadTaskCountOfUser implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) GetDownloadTaskCountOfUser(ctx context.Context, userID uint64) (uint64, error) {
+func (d *downloadTaskDataAccessor) GetDownloadTaskCountOfAccount(ctx context.Context, userID uint64) (uint64, error) {
 	panic("unimplemented")
 }
 
 // GetDownloadTaskListOfUser implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) GetDownloadTaskListOfUser(ctx context.Context, userID uint64, offset uint64, limit uint64) ([]DownloadTask, error) {
+func (d *downloadTaskDataAccessor) GetDownloadTaskListOfAccount(ctx context.Context, userID uint64, offset uint64, limit uint64) ([]DownloadTask, error) {
 	panic("unimplemented")
 }
 
