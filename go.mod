@@ -3,6 +3,7 @@ module github.com/nguyenhoang711/downloader
 go 1.23.8
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.6-20250423154025-7712fb530c57.1
 	github.com/IBM/sarama v1.45.1
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/go-sql-driver/mysql v1.6.0
@@ -16,7 +17,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.70.0
-	google.golang.org/protobuf v1.36.5
+	google.golang.org/protobuf v1.36.6
 	gopkg.in/yaml.v2 v2.4.0
 )
 

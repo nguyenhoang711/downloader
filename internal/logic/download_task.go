@@ -6,7 +6,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/mq/producer"
-	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -95,7 +95,7 @@ func (d downloadTask) databaseDownloadTaskToProtoDownloadTask(
 		},
 		DownloadType:   downloadTask.DownloadType,
 		Url:            downloadTask.URL,
-		DownloadStatus: go_load.DownloadStatus_Pending,
+		DownloadStatus: go_load.DownloadStatus_DOWNLOAD_STATUS_PENDING,
 	}
 }
 
@@ -117,7 +117,7 @@ func (d downloadTask) CreateDownloadTask(
 		OfAccountID:    accID,
 		DownloadType:   params.DownloadType,
 		URL:            params.URL,
-		DownloadStatus: go_load.DownloadStatus_Pending,
+		DownloadStatus: go_load.DownloadStatus_DOWNLOAD_STATUS_PENDING,
 		Metadata: database.JSON{
 			Data: make(map[string]any),
 		},

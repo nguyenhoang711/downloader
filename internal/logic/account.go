@@ -7,7 +7,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/cache"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
-	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"

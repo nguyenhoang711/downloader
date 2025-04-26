@@ -1,3 +1,6 @@
+# buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.6-20250423154025-7712fb530c57.1
+## explicit; go 1.22
+buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate
 # github.com/IBM/sarama v1.45.1
 ## explicit; go 1.21
 github.com/IBM/sarama
@@ -276,8 +279,8 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.36.5
-## explicit; go 1.21
+# google.golang.org/protobuf v1.36.6
+## explicit; go 1.22
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire

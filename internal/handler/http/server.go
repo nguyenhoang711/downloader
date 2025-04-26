@@ -7,7 +7,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/nguyenhoang711/downloader/internal/configs"
-	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	handlerGRPC "github.com/nguyenhoang711/downloader/internal/handler/grpc"
 	"github.com/nguyenhoang711/downloader/internal/handler/http/servemuxoptions"
 	"github.com/nguyenhoang711/downloader/internal/utils"

@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	"github.com/nguyenhoang711/downloader/internal/logic"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"

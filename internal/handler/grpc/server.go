@@ -6,7 +6,7 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"github.com/nguyenhoang711/downloader/internal/configs"
-	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
