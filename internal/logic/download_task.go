@@ -9,6 +9,7 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -34,9 +35,9 @@ type GetDownloadTaskListOutput struct {
 }
 
 type UpdateDownloadTaskParams struct {
-	ID    uint64
-	Token string
-	URL   string
+	DownloadTaskID uint64
+	Token          string
+	URL            string
 }
 
 type UpdateDownloadTaskOutput struct {
@@ -232,7 +233,7 @@ func (d downloadTask) UpdateDownloadTask(
 		}
 
 		downloadTask.URL = params.URL
-		output.DownloadTask = d.databaseDownloadTaskToProtoDownloadTask(downloadTask, account)
+		output.UpdatedDownloadTask = d.databaseDownloadTaskToProtoDownloadTask(downloadTask, account)
 		return d.downloadTaskDataAccessor.WithDatabase(td).UpdateDownloadTask(ctx, downloadTask)
 	})
 	if txErr != nil {

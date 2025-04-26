@@ -12,6 +12,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3
 	github.com/redis/go-redis/v9 v9.7.3
 	github.com/rubenv/sql-migrate v1.8.0
+	github.com/samber/lo v1.49.1
 	github.com/spf13/cobra v1.9.1
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.70.0

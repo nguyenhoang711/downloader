@@ -80,10 +80,18 @@ func (a *Handler) CreateSession(
 }
 
 // DeleteDownloadTask implements go_load.GoLoadServiceServer.
-func (a *Handler) DeleteDownloadTask(ctx context.Context,
-	delDownloadTaskReq *go_load.DeleteDownloadTaskRequest,
+func (a *Handler) DeleteDownloadTask(
+	ctx context.Context,
+	request *go_load.DeleteDownloadTaskRequest,
 ) (*go_load.DeleteDownloadTaskResponse, error) {
-	panic("unimplemented")
+	if err := a.downloadTaskLogic.DeleteDownloadTask(ctx, logic.DeleteDownloadTaskParams{
+		Token:          request.GetToken(),
+		DownloadTaskID: request.GetDownloadTaskId(),
+	}); err != nil {
+		return nil, err
+	}
+
+	return &go_load.DeleteDownloadTaskResponse{}, nil
 }
 
 // GetDownloadTaskFile implements go_load.GoLoadServiceServer.
@@ -99,15 +107,38 @@ func (a *Handler) GetDownloadTaskList(
 	ctx context.Context,
 	getListDownloadReq *go_load.GetDownloadTaskListRequest,
 ) (*go_load.GetDownloadTaskListResponse, error) {
-	panic("unimplemented")
+	output, err := a.downloadTaskLogic.GetDownloadTaskList(ctx, logic.GetDownloadTaskListParams{
+		Token:  getListDownloadReq.GetToken(),
+		Offset: getListDownloadReq.GetOffset(),
+		Limit:  getListDownloadReq.GetLimit(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &go_load.GetDownloadTaskListResponse{
+		DownloadTaskList:       output.DownloadTaskList,
+		TotalDownloadTaskCount: output.TotalDownloadTaskCount,
+	}, nil
 }
 
 // UpdateDownloadTask implements go_load.GoLoadServiceServer.
 func (a *Handler) UpdateDownloadTask(
 	ctx context.Context,
-	updateDownloadTask *go_load.UpdateDownloadTaskRequest,
+	request *go_load.UpdateDownloadTaskRequest,
 ) (*go_load.UpdateDownloadTaskResponse, error) {
-	panic("unimplemented")
+	output, err := a.downloadTaskLogic.UpdateDownloadTask(ctx, logic.UpdateDownloadTaskParams{
+		Token:          request.GetToken(),
+		DownloadTaskID: request.GetDownloadTaskId(),
+		URL:            request.GetUrl(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &go_load.UpdateDownloadTaskResponse{
+		DownloadTask: output.UpdatedDownloadTask,
+	}, nil
 }
 
 // mustEmbedUnimplementedGoLoadServiceServer implements go_load.GoLoadServiceServer.

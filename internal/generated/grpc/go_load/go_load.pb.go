@@ -772,11 +772,11 @@ func (x *UpdateDownloadTaskResponse) GetDownloadTask() *DownloadTask {
 }
 
 type DeleteDownloadTaskRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	DownloadTask  *DownloadTask          `protobuf:"bytes,2,opt,name=download_task,json=downloadTask,proto3" json:"download_task,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DeleteDownloadTaskRequest) Reset() {
@@ -816,11 +816,11 @@ func (x *DeleteDownloadTaskRequest) GetToken() string {
 	return ""
 }
 
-func (x *DeleteDownloadTaskRequest) GetDownloadTask() *DownloadTask {
+func (x *DeleteDownloadTaskRequest) GetDownloadTaskId() uint64 {
 	if x != nil {
-		return x.DownloadTask
+		return x.DownloadTaskId
 	}
-	return nil
+	return 0
 }
 
 type DeleteDownloadTaskResponse struct {
@@ -1000,10 +1000,10 @@ const file_api_go_load_proto_rawDesc = "" +
 	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\x12\x1a\n" +
 	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
 	"\x1aUpdateDownloadTaskResponse\x12:\n" +
-	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"m\n" +
+	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"[\n" +
 	"\x19DeleteDownloadTaskRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12:\n" +
-	"\rdownload_task\x18\x02 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"\x1c\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
+	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\"\x1c\n" +
 	"\x1aDeleteDownloadTaskResponse\"\\\n" +
 	"\x1aGetDownloadTaskFileRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
@@ -1072,26 +1072,25 @@ var file_api_go_load_proto_depIdxs = []int32{
 	3,  // 5: go_load.CreateDownloadTaskResponse.download_task:type_name -> go_load.DownloadTask
 	3,  // 6: go_load.GetDownloadTaskListResponse.download_task_list:type_name -> go_load.DownloadTask
 	3,  // 7: go_load.UpdateDownloadTaskResponse.download_task:type_name -> go_load.DownloadTask
-	3,  // 8: go_load.DeleteDownloadTaskRequest.download_task:type_name -> go_load.DownloadTask
-	4,  // 9: go_load.GoLoadService.CreateAccount:input_type -> go_load.CreateAccountRequest
-	6,  // 10: go_load.GoLoadService.CreateSession:input_type -> go_load.CreateSessionRequest
-	8,  // 11: go_load.GoLoadService.CreateDownloadTask:input_type -> go_load.CreateDownloadTaskRequest
-	10, // 12: go_load.GoLoadService.GetDownloadTaskList:input_type -> go_load.GetDownloadTaskListRequest
-	12, // 13: go_load.GoLoadService.UpdateDownloadTask:input_type -> go_load.UpdateDownloadTaskRequest
-	14, // 14: go_load.GoLoadService.DeleteDownloadTask:input_type -> go_load.DeleteDownloadTaskRequest
-	16, // 15: go_load.GoLoadService.GetDownloadTaskFile:input_type -> go_load.GetDownloadTaskFileRequest
-	5,  // 16: go_load.GoLoadService.CreateAccount:output_type -> go_load.CreateAccountResponse
-	7,  // 17: go_load.GoLoadService.CreateSession:output_type -> go_load.CreateSessionResponse
-	9,  // 18: go_load.GoLoadService.CreateDownloadTask:output_type -> go_load.CreateDownloadTaskResponse
-	11, // 19: go_load.GoLoadService.GetDownloadTaskList:output_type -> go_load.GetDownloadTaskListResponse
-	13, // 20: go_load.GoLoadService.UpdateDownloadTask:output_type -> go_load.UpdateDownloadTaskResponse
-	15, // 21: go_load.GoLoadService.DeleteDownloadTask:output_type -> go_load.DeleteDownloadTaskResponse
-	17, // 22: go_load.GoLoadService.GetDownloadTaskFile:output_type -> go_load.GetDownloadTaskFileResponse
-	16, // [16:23] is the sub-list for method output_type
-	9,  // [9:16] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	4,  // 8: go_load.GoLoadService.CreateAccount:input_type -> go_load.CreateAccountRequest
+	6,  // 9: go_load.GoLoadService.CreateSession:input_type -> go_load.CreateSessionRequest
+	8,  // 10: go_load.GoLoadService.CreateDownloadTask:input_type -> go_load.CreateDownloadTaskRequest
+	10, // 11: go_load.GoLoadService.GetDownloadTaskList:input_type -> go_load.GetDownloadTaskListRequest
+	12, // 12: go_load.GoLoadService.UpdateDownloadTask:input_type -> go_load.UpdateDownloadTaskRequest
+	14, // 13: go_load.GoLoadService.DeleteDownloadTask:input_type -> go_load.DeleteDownloadTaskRequest
+	16, // 14: go_load.GoLoadService.GetDownloadTaskFile:input_type -> go_load.GetDownloadTaskFileRequest
+	5,  // 15: go_load.GoLoadService.CreateAccount:output_type -> go_load.CreateAccountResponse
+	7,  // 16: go_load.GoLoadService.CreateSession:output_type -> go_load.CreateSessionResponse
+	9,  // 17: go_load.GoLoadService.CreateDownloadTask:output_type -> go_load.CreateDownloadTaskResponse
+	11, // 18: go_load.GoLoadService.GetDownloadTaskList:output_type -> go_load.GetDownloadTaskListResponse
+	13, // 19: go_load.GoLoadService.UpdateDownloadTask:output_type -> go_load.UpdateDownloadTaskResponse
+	15, // 20: go_load.GoLoadService.DeleteDownloadTask:output_type -> go_load.DeleteDownloadTaskResponse
+	17, // 21: go_load.GoLoadService.GetDownloadTaskFile:output_type -> go_load.GetDownloadTaskFileResponse
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_go_load_proto_init() }
