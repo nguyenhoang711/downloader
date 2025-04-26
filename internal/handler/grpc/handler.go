@@ -56,7 +56,7 @@ func (a *Handler) CreateDownloadTask(
 	}
 
 	return &go_load.CreateDownloadTaskResponse{
-		DownloadTask: &output.DownloadTask,
+		DownloadTask: output.DownloadTask,
 	}, nil
 }
 
@@ -65,7 +65,7 @@ func (a *Handler) CreateSession(
 	ctx context.Context,
 	request *go_load.CreateSessionRequest,
 ) (*go_load.CreateSessionResponse, error) {
-	token, err := a.accountLogic.CreateSession(ctx, logic.CreateSessionParams{
+	output, err := a.accountLogic.CreateSession(ctx, logic.CreateSessionParams{
 		AccountName: request.GetAccountName(),
 		Password:    request.GetPassword(),
 	})
@@ -74,7 +74,8 @@ func (a *Handler) CreateSession(
 	}
 
 	return &go_load.CreateSessionResponse{
-		Token: token,
+		Account: output.Account,
+		Token:   output.Token,
 	}, nil
 }
 
