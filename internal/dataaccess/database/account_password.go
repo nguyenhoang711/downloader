@@ -59,7 +59,7 @@ func (a accountPasswordDataAccessor) CreateAccountPassword(ctx context.Context, 
 		ExecContext(ctx)
 	if err != nil {
 		log.With(zap.Error(err)).Error("fail to save account password")
-		return status.Errorf(codes.Internal, "failed to create account password: %+v", err)
+		return status.Error(codes.Internal, "failed to create account password")
 	}
 
 	return nil
@@ -77,7 +77,7 @@ func (a accountPasswordDataAccessor) UpdateAccountPassword(ctx context.Context, 
 		ExecContext(ctx)
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to update password")
-		return status.Errorf(codes.Internal, "failed to update account password: %+v", err)
+		return status.Error(codes.Internal, "failed to update account password")
 	}
 	return nil
 }
@@ -108,11 +108,11 @@ func (a accountPasswordDataAccessor) GetAccountPassword(
 
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to get account password by account id")
-		return AccountPassword{}, status.Errorf(codes.Internal, "failed to get password by account id: %+v", err)
+		return AccountPassword{}, status.Error(codes.Internal, "failed to get password by account id")
 	}
 	if !found {
 		logger.Warn("cannot get account password by account id")
-		return AccountPassword{}, status.Errorf(codes.Internal, "cannot find password via account id: %+v", err)
+		return AccountPassword{}, status.Error(codes.Internal, "cannot find password via account id")
 	}
 
 	return accountPass, nil

@@ -13,6 +13,8 @@ import (
 
 var (
 	TabNameAccounts = goqu.T("accounts")
+
+	ErrAccountNotFound = status.Error(codes.NotFound, "account not found")
 )
 
 const (
@@ -61,14 +63,14 @@ func (a accountDataAccessor) CreateAccount(ctx context.Context, acc Account) (ui
 	if err != nil {
 		log.Printf("failed to create account, err=%+v\n", err)
 		logger.With(zap.Error(err)).Error("failed to create account")
-		return 0, status.Errorf(codes.Internal, "failed to create account: %+v", err)
+		return 0, status.Error(codes.Internal, "failed to create account")
 	}
 	lastInsertedID, err := result.LastInsertId()
 	if err != nil {
 		logger.With(zap.Error(err)).Error("failed to get last inserted id")
-		return 0, status.Errorf(codes.Internal, "failed to get account id: %+v", err)
+		return 0, status.Error(codes.Internal, "failed to get account id")
 	}
-	return uint64(lastInsertedID), err
+	return uint64(lastInsertedID), nil
 }
 
 // GetAccountByAccountName implements AccountDataAccessor.
@@ -82,11 +84,12 @@ func (a accountDataAccessor) GetAccountByAccountName(ctx context.Context, accnam
 		ScanStructContext(ctx, &account)
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to get account by acc_name")
+		return Account{}, status.Error(codes.Internal, "failed to get account by name")
 	}
 
 	if !found {
 		logger.Warn("cannot find account with account name")
-		return Account{}, status.Error(codes.NotFound, "account not found")
+		return Account{}, ErrAccountNotFound
 	}
 
 	return account, nil
@@ -103,11 +106,12 @@ func (a accountDataAccessor) GetAccountByID(ctx context.Context, acc_id uint64) 
 		ScanStructContext(ctx, &account)
 	if err != nil {
 		logger.With(zap.Error(err)).Error("fail to get account by account id")
+		return Account{}, status.Error(codes.Internal, "failed to get account by id")
 	}
 
 	if !found {
 		logger.Warn("cannot find account with account id")
-		return Account{}, status.Error(codes.NotFound, "account not found")
+		return Account{}, ErrAccountNotFound
 	}
 
 	return account, nil

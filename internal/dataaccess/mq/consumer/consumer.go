@@ -21,8 +21,8 @@ type Consumer interface {
 
 type consumer struct {
 	saramaConsumer            sarama.Consumer
-	queueNameToHandlerFuncMap map[string]HandlerFunc
 	logger                    *zap.Logger
+	queueNameToHandlerFuncMap map[string]HandlerFunc
 }
 
 // config for consumers
