@@ -402,7 +402,6 @@ func (x *CreateSessionRequest) GetPassword() string {
 type CreateSessionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Token         string                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -444,18 +443,10 @@ func (x *CreateSessionResponse) GetAccount() *Account {
 	return nil
 }
 
-func (x *CreateSessionResponse) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
 type CreateDownloadTaskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	DownloadType  DownloadType           `protobuf:"varint,2,opt,name=download_type,json=downloadType,proto3,enum=go_load.DownloadType" json:"download_type,omitempty"`
-	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	DownloadType  DownloadType           `protobuf:"varint,1,opt,name=download_type,json=downloadType,proto3,enum=go_load.DownloadType" json:"download_type,omitempty"`
+	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -488,13 +479,6 @@ func (x *CreateDownloadTaskRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateDownloadTaskRequest.ProtoReflect.Descriptor instead.
 func (*CreateDownloadTaskRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *CreateDownloadTaskRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
 }
 
 func (x *CreateDownloadTaskRequest) GetDownloadType() DownloadType {
@@ -557,9 +541,8 @@ func (x *CreateDownloadTaskResponse) GetDownloadTask() *DownloadTask {
 
 type GetDownloadTaskListRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Offset        uint64                 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
-	Limit         uint64                 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        uint64                 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         uint64                 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -592,13 +575,6 @@ func (x *GetDownloadTaskListRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetDownloadTaskListRequest.ProtoReflect.Descriptor instead.
 func (*GetDownloadTaskListRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *GetDownloadTaskListRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
 }
 
 func (x *GetDownloadTaskListRequest) GetOffset() uint64 {
@@ -669,9 +645,8 @@ func (x *GetDownloadTaskListResponse) GetTotalDownloadTaskCount() uint64 {
 
 type UpdateDownloadTaskRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
-	Url            string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	Url            string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -704,13 +679,6 @@ func (x *UpdateDownloadTaskRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateDownloadTaskRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDownloadTaskRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *UpdateDownloadTaskRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
 }
 
 func (x *UpdateDownloadTaskRequest) GetDownloadTaskId() uint64 {
@@ -773,8 +741,7 @@ func (x *UpdateDownloadTaskResponse) GetDownloadTask() *DownloadTask {
 
 type DeleteDownloadTaskRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -807,13 +774,6 @@ func (x *DeleteDownloadTaskRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use DeleteDownloadTaskRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDownloadTaskRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *DeleteDownloadTaskRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
 }
 
 func (x *DeleteDownloadTaskRequest) GetDownloadTaskId() uint64 {
@@ -861,8 +821,7 @@ func (*DeleteDownloadTaskResponse) Descriptor() ([]byte, []int) {
 
 type GetDownloadTaskFileRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	DownloadTaskId uint64                 `protobuf:"varint,2,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
+	DownloadTaskId uint64                 `protobuf:"varint,1,opt,name=download_task_id,json=downloadTaskId,proto3" json:"download_task_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -895,13 +854,6 @@ func (x *GetDownloadTaskFileRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetDownloadTaskFileRequest.ProtoReflect.Descriptor instead.
 func (*GetDownloadTaskFileRequest) Descriptor() ([]byte, []int) {
 	return file_api_go_load_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *GetDownloadTaskFileRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
 }
 
 func (x *GetDownloadTaskFileRequest) GetDownloadTaskId() uint64 {
@@ -978,36 +930,30 @@ const file_api_go_load_proto_rawDesc = "" +
 	"account_id\x18\x01 \x01(\x04R\taccountId\"\x8c\x01\n" +
 	"\x14CreateSessionRequest\x12<\n" +
 	"\vaccountName\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
-	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"Y\n" +
+	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"C\n" +
 	"\x15CreateSessionResponse\x12*\n" +
-	"\aaccount\x18\x01 \x01(\v2\x10.go_load.AccountR\aaccount\x12\x14\n" +
-	"\x05token\x18\x02 \x01(\tR\x05token\"\x89\x01\n" +
-	"\x19CreateDownloadTaskRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12:\n" +
-	"\rdownload_type\x18\x02 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x1a\n" +
-	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xd0\x0fR\x03url\"X\n" +
+	"\aaccount\x18\x01 \x01(\v2\x10.go_load.AccountR\aaccount\"s\n" +
+	"\x19CreateDownloadTaskRequest\x12:\n" +
+	"\rdownload_type\x18\x01 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x1a\n" +
+	"\x03url\x18\x02 \x01(\tB\b\xfaB\x05r\x03\x18\xd0\x0fR\x03url\"X\n" +
 	"\x1aCreateDownloadTaskResponse\x12:\n" +
-	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"i\n" +
-	"\x1aGetDownloadTaskListRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x04R\x06offset\x12\x1d\n" +
-	"\x05limit\x18\x03 \x01(\x04B\a\xfaB\x042\x02\x18dR\x05limit\"\x9d\x01\n" +
+	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"S\n" +
+	"\x1aGetDownloadTaskListRequest\x12\x16\n" +
+	"\x06offset\x18\x01 \x01(\x04R\x06offset\x12\x1d\n" +
+	"\x05limit\x18\x02 \x01(\x04B\a\xfaB\x042\x02\x18dR\x05limit\"\x9d\x01\n" +
 	"\x1bGetDownloadTaskListResponse\x12C\n" +
 	"\x12download_task_list\x18\x01 \x03(\v2\x15.go_load.DownloadTaskR\x10downloadTaskList\x129\n" +
-	"\x19total_download_task_count\x18\x02 \x01(\x04R\x16totalDownloadTaskCount\"w\n" +
-	"\x19UpdateDownloadTaskRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
-	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\x12\x1a\n" +
-	"\x03url\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
+	"\x19total_download_task_count\x18\x02 \x01(\x04R\x16totalDownloadTaskCount\"a\n" +
+	"\x19UpdateDownloadTaskRequest\x12(\n" +
+	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\x12\x1a\n" +
+	"\x03url\x18\x02 \x01(\tB\b\xfaB\x05r\x03\x88\x01\x01R\x03url\"X\n" +
 	"\x1aUpdateDownloadTaskResponse\x12:\n" +
-	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"[\n" +
-	"\x19DeleteDownloadTaskRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
-	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\"\x1c\n" +
-	"\x1aDeleteDownloadTaskResponse\"\\\n" +
-	"\x1aGetDownloadTaskFileRequest\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12(\n" +
-	"\x10download_task_id\x18\x02 \x01(\x04R\x0edownloadTaskId\"1\n" +
+	"\rdownload_task\x18\x01 \x01(\v2\x15.go_load.DownloadTaskR\fdownloadTask\"E\n" +
+	"\x19DeleteDownloadTaskRequest\x12(\n" +
+	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\"\x1c\n" +
+	"\x1aDeleteDownloadTaskResponse\"F\n" +
+	"\x1aGetDownloadTaskFileRequest\x12(\n" +
+	"\x10download_task_id\x18\x01 \x01(\x04R\x0edownloadTaskId\"1\n" +
 	"\x1bGetDownloadTaskFileResponse\x12\x12\n" +
 	"\x04data\x18\x01 \x01(\fR\x04data*+\n" +
 	"\fDownloadType\x12\x11\n" +

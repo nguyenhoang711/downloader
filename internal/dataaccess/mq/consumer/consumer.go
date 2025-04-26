@@ -19,12 +19,6 @@ type Consumer interface {
 	Start(ctx context.Context) error
 }
 
-type partitionConsumerAndHandlerFunc struct {
-	queueName         string
-	partitionConsumer sarama.PartitionConsumer
-	handlerFunc       HandlerFunc
-}
-
 type consumer struct {
 	saramaConsumer            sarama.Consumer
 	queueNameToHandlerFuncMap map[string]HandlerFunc
@@ -49,13 +43,14 @@ func NewConsumer(
 	}
 
 	return &consumer{
-		saramaConsumer: saramaConsumer,
-		logger:         logger,
+		saramaConsumer:            saramaConsumer,
+		logger:                    logger,
+		queueNameToHandlerFuncMap: make(map[string]HandlerFunc),
 	}, nil
 }
 
 // RegisterHandler implements Consumer.
-func (c consumer) RegisterHandler(queueName string, handlerFunc HandlerFunc) {
+func (c *consumer) RegisterHandler(queueName string, handlerFunc HandlerFunc) {
 	c.queueNameToHandlerFuncMap[queueName] = handlerFunc
 }
 

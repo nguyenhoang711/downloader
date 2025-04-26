@@ -5,6 +5,13 @@ import (
 
 	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
 	"github.com/nguyenhoang711/downloader/internal/logic"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+)
+
+const (
+	//nolint:gosec // This is just to specify the metadata name
+	AuthTokenMetadataName = "GOLOAD_AUTH"
 )
 
 type Handler struct {
@@ -21,6 +28,20 @@ func NewHandler(
 		accountLogic:      accountLogic,
 		downloadTaskLogic: downloadTaskLogic,
 	}
+}
+
+func (a Handler) getAuthTokenMetadata(ctx context.Context) string {
+	metadata, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+
+	metadataValues := metadata.Get(AuthTokenMetadataName)
+	if len(metadataValues) == 0 {
+		return ""
+	}
+
+	return metadataValues[0]
 }
 
 // CreateAccount implements go_load.GoLoadServiceServer.
@@ -42,12 +63,12 @@ func (a Handler) CreateAccount(
 }
 
 // CreateDownloadTask implements go_load.GoLoadServiceServer.
-func (a *Handler) CreateDownloadTask(
+func (a Handler) CreateDownloadTask(
 	ctx context.Context,
 	request *go_load.CreateDownloadTaskRequest,
 ) (*go_load.CreateDownloadTaskResponse, error) {
 	output, err := a.downloadTaskLogic.CreateDownloadTask(ctx, logic.CreateDownloadTaskParams{
-		Token:        request.GetToken(),
+		Token:        a.getAuthTokenMetadata(ctx),
 		DownloadType: request.GetDownloadType(),
 		URL:          request.GetUrl(),
 	})
@@ -61,7 +82,7 @@ func (a *Handler) CreateDownloadTask(
 }
 
 // CreateSession implements go_load.GoLoadServiceServer.
-func (a *Handler) CreateSession(
+func (a Handler) CreateSession(
 	ctx context.Context,
 	request *go_load.CreateSessionRequest,
 ) (*go_load.CreateSessionResponse, error) {
@@ -73,19 +94,23 @@ func (a *Handler) CreateSession(
 		return nil, err
 	}
 
+	err = grpc.SetHeader(ctx, metadata.Pairs(AuthTokenMetadataName, output.Token))
+	if err != nil {
+		return nil, err
+	}
+
 	return &go_load.CreateSessionResponse{
 		Account: output.Account,
-		Token:   output.Token,
 	}, nil
 }
 
 // DeleteDownloadTask implements go_load.GoLoadServiceServer.
-func (a *Handler) DeleteDownloadTask(
+func (a Handler) DeleteDownloadTask(
 	ctx context.Context,
 	request *go_load.DeleteDownloadTaskRequest,
 ) (*go_load.DeleteDownloadTaskResponse, error) {
 	if err := a.downloadTaskLogic.DeleteDownloadTask(ctx, logic.DeleteDownloadTaskParams{
-		Token:          request.GetToken(),
+		Token:          a.getAuthTokenMetadata(ctx),
 		DownloadTaskID: request.GetDownloadTaskId(),
 	}); err != nil {
 		return nil, err
@@ -95,7 +120,7 @@ func (a *Handler) DeleteDownloadTask(
 }
 
 // GetDownloadTaskFile implements go_load.GoLoadServiceServer.
-func (a *Handler) GetDownloadTaskFile(
+func (a Handler) GetDownloadTaskFile(
 	*go_load.GetDownloadTaskFileRequest,
 	go_load.GoLoadService_GetDownloadTaskFileServer,
 ) error {
@@ -108,7 +133,7 @@ func (a *Handler) GetDownloadTaskList(
 	getListDownloadReq *go_load.GetDownloadTaskListRequest,
 ) (*go_load.GetDownloadTaskListResponse, error) {
 	output, err := a.downloadTaskLogic.GetDownloadTaskList(ctx, logic.GetDownloadTaskListParams{
-		Token:  getListDownloadReq.GetToken(),
+		Token:  a.getAuthTokenMetadata(ctx),
 		Offset: getListDownloadReq.GetOffset(),
 		Limit:  getListDownloadReq.GetLimit(),
 	})
@@ -128,7 +153,7 @@ func (a *Handler) UpdateDownloadTask(
 	request *go_load.UpdateDownloadTaskRequest,
 ) (*go_load.UpdateDownloadTaskResponse, error) {
 	output, err := a.downloadTaskLogic.UpdateDownloadTask(ctx, logic.UpdateDownloadTaskParams{
-		Token:          request.GetToken(),
+		Token:          a.getAuthTokenMetadata(ctx),
 		DownloadTaskID: request.GetDownloadTaskId(),
 		URL:            request.GetUrl(),
 	})
