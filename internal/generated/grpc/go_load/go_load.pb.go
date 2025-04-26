@@ -126,7 +126,7 @@ func (DownloadStatus) EnumDescriptor() ([]byte, []int) {
 type Account struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	AccountName   string                 `protobuf:"bytes,2,opt,name=accountName,proto3" json:"accountName,omitempty"`
+	AccountName   string                 `protobuf:"bytes,2,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -253,7 +253,7 @@ func (x *DownloadTask) GetDownloadStatus() DownloadStatus {
 
 type CreateAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountName   string                 `protobuf:"bytes,1,opt,name=accountName,proto3" json:"accountName,omitempty"`
+	AccountName   string                 `protobuf:"bytes,1,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -349,7 +349,7 @@ func (x *CreateAccountResponse) GetAccountId() uint64 {
 
 type CreateSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountName   string                 `protobuf:"bytes,1,opt,name=accountName,proto3" json:"accountName,omitempty"`
+	AccountName   string                 `protobuf:"bytes,1,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -911,25 +911,25 @@ var File_api_go_load_proto protoreflect.FileDescriptor
 
 const file_api_go_load_proto_rawDesc = "" +
 	"\n" +
-	"\x11api/go_load.proto\x12\ago_load\x1a\x12api/validate.proto\";\n" +
+	"\x11api/go_load.proto\x12\ago_load\x1a\x12api/validate.proto\"<\n" +
 	"\aAccount\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12 \n" +
-	"\vaccountName\x18\x02 \x01(\tR\vaccountName\"\xdf\x01\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12!\n" +
+	"\faccount_name\x18\x02 \x01(\tR\vaccountName\"\xdf\x01\n" +
 	"\fDownloadTask\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\x12/\n" +
 	"\n" +
 	"of_account\x18\x02 \x01(\v2\x10.go_load.AccountR\tofAccount\x12:\n" +
 	"\rdownload_type\x18\x03 \x01(\x0e2\x15.go_load.DownloadTypeR\fdownloadType\x12\x10\n" +
 	"\x03url\x18\x04 \x01(\tR\x03url\x12@\n" +
-	"\x0fdownload_status\x18\x05 \x01(\x0e2\x17.go_load.DownloadStatusR\x0edownloadStatus\"\x8c\x01\n" +
-	"\x14CreateAccountRequest\x12<\n" +
-	"\vaccountName\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
+	"\x0fdownload_status\x18\x05 \x01(\x0e2\x17.go_load.DownloadStatusR\x0edownloadStatus\"\x8d\x01\n" +
+	"\x14CreateAccountRequest\x12=\n" +
+	"\faccount_name\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
 	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"6\n" +
 	"\x15CreateAccountResponse\x12\x1d\n" +
 	"\n" +
-	"account_id\x18\x01 \x01(\x04R\taccountId\"\x8c\x01\n" +
-	"\x14CreateSessionRequest\x12<\n" +
-	"\vaccountName\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
+	"account_id\x18\x01 \x01(\x04R\taccountId\"\x8d\x01\n" +
+	"\x14CreateSessionRequest\x12=\n" +
+	"\faccount_name\x18\x01 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\vaccountName\x126\n" +
 	"\bpassword\x18\x02 \x01(\tB\x1a\xfaB\x17r\x152\x13^[a-zA-Z0-9]{6,32}$R\bpassword\"C\n" +
 	"\x15CreateSessionResponse\x12*\n" +
 	"\aaccount\x18\x01 \x01(\v2\x10.go_load.AccountR\aaccount\"s\n" +
