@@ -81,7 +81,7 @@ docker-compose-dev-up:
 .PHONY: docker-compose-dev-down
 docker-compose-dev-down:
 	docker-compose -f deployments/docker-compose.dev.yml down
- 
+
  
 .PHONY: run-server
 run-server:

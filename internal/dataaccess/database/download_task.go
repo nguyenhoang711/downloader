@@ -5,22 +5,40 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/generated/grpc/go_load"
+	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+var (
+	TabNameDownloadTasks = goqu.T("download_tasks")
+)
+
+const (
+	ColNameDownloadTaskID             = "id"
+	ColNameDownloadTaskOfAccountID    = "of_account_id"
+	ColNameDownloadTaskDownloadType   = "download_type"
+	ColNameDownloadTaskURL            = "url"
+	ColNameDownloadTaskDownloadStatus = "download_status"
+	ColNameDownloadTaskMetadata       = "metadata"
 )
 
 type DownloadTask struct {
-	ID             uint64                 `db:"id"`
-	OfAccountID    uint64                 `db:"of_account_id"`
+	ID             uint64                 `db:"id" goqu:"skipinsert,skipupdate"`
+	OfAccountID    uint64                 `db:"of_account_id" goqu:"skipinsert,skipupdate"`
 	DownloadType   go_load.DownloadType   `db:"download_type"`
 	URL            string                 `db:"url"`
 	DownloadStatus go_load.DownloadStatus `db:"download_status"`
-	Metadata       string                 `db:"metadata"`
+	Metadata       JSON                   `db:"metadata"`
 }
 
 type DownloadTaskDataAccessor interface {
+	GetDownloadTask(ctx context.Context, id uint64) (DownloadTask, error)
 	CreateDownloadTask(ctx context.Context, task DownloadTask) (uint64, error)
-	GetDownloadTaskListOfUser(ctx context.Context, userID, offset, limit uint64) ([]DownloadTask, error)
-	GetDownloadTaskCountOfUser(ctx context.Context, userID uint64) (uint64, error)
+	GetDownloadTaskListOfAccount(ctx context.Context, accountID, offset, limit uint64) ([]DownloadTask, error)
+	GetDownloadTaskCountOfAccount(ctx context.Context, accountID uint64) (uint64, error)
+	GetDownloadTaskWithXLock(ctx context.Context, id uint64) (DownloadTask, error)
 	UpdateDownloadTask(ctx context.Context, task DownloadTask) error
 	DeleteDownloadTask(ctx context.Context, id uint64) error
 	WithDatabase(database Database) DownloadTaskDataAccessor
@@ -42,31 +60,150 @@ func NewDownloadTaskDataAccessor(
 }
 
 // CreateDownloadTask implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) CreateDownloadTask(ctx context.Context, task DownloadTask) (uint64, error) {
-	panic("unimplemented")
+func (d downloadTaskDataAccessor) CreateDownloadTask(ctx context.Context, task DownloadTask) (uint64, error) {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Any("task", task))
+
+	result, err := d.database.
+		Insert(TabNameDownloadTasks).
+		Rows(task).
+		Executor().
+		ExecContext(ctx)
+
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to create download task")
+		return 0, status.Errorf(codes.Internal, "failed to create download task")
+	}
+
+	lastInsertedID, err := result.LastInsertId()
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to get last inserted id")
+		return 0, status.Errorf(codes.Internal, "failed to get last inserted id")
+	}
+
+	return uint64(lastInsertedID), nil
 }
 
 // DeleteDownloadTask implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) DeleteDownloadTask(ctx context.Context, id uint64) error {
-	panic("unimplemented")
+func (d downloadTaskDataAccessor) DeleteDownloadTask(ctx context.Context, id uint64) error {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Uint64("id", id))
+
+	if _, err := d.database.
+		Delete(TabNameDownloadTasks).
+		Where(goqu.Ex{ColNameDownloadTaskID: id}).
+		Executor().
+		ExecContext(ctx); err != nil {
+		logger.With(zap.Error(err)).Error("failed to delete download task")
+		return status.Errorf(codes.Internal, "failed to delete download task")
+	}
+
+	return nil
 }
 
-// GetDownloadTaskCountOfUser implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) GetDownloadTaskCountOfUser(ctx context.Context, userID uint64) (uint64, error) {
-	panic("unimplemented")
+// GetDownloadTaskCountOfAccount implements DownloadTaskDataAccessor.
+func (d downloadTaskDataAccessor) GetDownloadTaskCountOfAccount(ctx context.Context, accountID uint64) (uint64, error) {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Uint64("account_id", accountID))
+
+	count, err := d.database.
+		From(TabNameDownloadTasks).
+		Where(goqu.Ex{ColNameDownloadTaskOfAccountID: accountID}).
+		CountContext(ctx)
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to count download task of account")
+		return 0, status.Errorf(codes.Internal, "failed to count download tasks of account")
+	}
+
+	return uint64(count), nil
 }
 
-// GetDownloadTaskListOfUser implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) GetDownloadTaskListOfUser(ctx context.Context, userID uint64, offset uint64, limit uint64) ([]DownloadTask, error) {
-	panic("unimplemented")
+// GetDownloadTaskListOfAccount implements DownloadTaskDataAccessor.
+func (d downloadTaskDataAccessor) GetDownloadTaskListOfAccount(ctx context.Context, accountID uint64, offset uint64, limit uint64) ([]DownloadTask, error) {
+	logger := utils.LoggerWithContext(ctx, d.logger)
+
+	downloadTasksList := make([]DownloadTask, 0)
+
+	if err := d.database.
+		Select().
+		From(TabNameDownloadTasks).
+		Where(goqu.Ex{ColNameDownloadTaskOfAccountID: accountID}).
+		Offset(uint(offset)).
+		Limit(uint(limit)).
+		Executor().
+		ScanStructsContext(ctx, &downloadTasksList); err != nil {
+		logger.With(zap.Error(err)).Error("failed to get list of download tasks of account")
+		return nil, status.Errorf(codes.Internal, "failed to get list of download tasks of account")
+	}
+
+	return downloadTasksList, nil
 }
 
 // UpdateDownloadTask implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) UpdateDownloadTask(ctx context.Context, task DownloadTask) error {
-	panic("unimplemented")
+func (d downloadTaskDataAccessor) UpdateDownloadTask(ctx context.Context, task DownloadTask) error {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Any("task", task))
+
+	if _, err := d.database.
+		Update(TabNameDownloadTasks).
+		Set(task).
+		Where(goqu.Ex{ColNameDownloadTaskID: task.ID}).
+		Executor().
+		ExecContext(ctx); err != nil {
+		logger.With(zap.Error(err)).Error("failed to update download task")
+		return status.Errorf(codes.Internal, "failed to update download task")
+	}
+
+	return nil
 }
 
 // WithDatabase implements DownloadTaskDataAccessor.
-func (d *downloadTaskDataAccessor) WithDatabase(database Database) DownloadTaskDataAccessor {
-	panic("unimplemented")
+func (d downloadTaskDataAccessor) WithDatabase(database Database) DownloadTaskDataAccessor {
+	return &downloadTaskDataAccessor{
+		database: database,
+		logger:   d.logger,
+	}
+}
+
+// GetDownloadTask implements DownloadTaskDataAccessor.
+func (d *downloadTaskDataAccessor) GetDownloadTask(ctx context.Context, id uint64) (DownloadTask, error) {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Uint64("id", id))
+
+	downloadTask := DownloadTask{}
+	found, err := d.database.
+		Select().
+		From(TabNameDownloadTasks).
+		Where(goqu.Ex{ColNameDownloadTaskID: id}).
+		ScanStructContext(ctx, &downloadTask)
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to get download task")
+		return DownloadTask{}, status.Errorf(codes.Internal, "failed to get download task list of account")
+	}
+
+	if !found {
+		logger.Error("download task not found")
+		return DownloadTask{}, status.Error(codes.NotFound, "download task not found")
+	}
+
+	return downloadTask, nil
+}
+
+// GetDownloadTaskWithXLock implements DownloadTaskDataAccessor.
+func (d *downloadTaskDataAccessor) GetDownloadTaskWithXLock(ctx context.Context, id uint64) (DownloadTask, error) {
+	logger := utils.LoggerWithContext(ctx, d.logger).With(zap.Uint64("id", id))
+
+	downloadTask := DownloadTask{}
+	found, err := d.database.
+		Select().
+		From(TabNameDownloadTasks).
+		Where(goqu.Ex{ColNameDownloadTaskID: id}).
+		ForUpdate(goqu.Wait).
+		ScanStructContext(ctx, &downloadTask)
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to get download task")
+		return DownloadTask{}, status.Errorf(codes.Internal, "failed to get download task of account")
+	}
+
+	if !found {
+		logger.Error("download task not found")
+		return DownloadTask{}, status.Error(codes.NotFound, "download task not found")
+	}
+
+	return downloadTask, nil
 }

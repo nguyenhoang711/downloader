@@ -91,7 +91,9 @@ func (d downloadTask) CreateDownloadTask(
 		DownloadType:   params.DownloadType,
 		URL:            params.URL,
 		DownloadStatus: go_load.DownloadStatus_Pending,
-		Metadata:       "{}",
+		Metadata: database.JSON{
+			Data: make(map[string]any),
+		},
 	}
 
 	txErr := d.goquDatabase.WithTx(func(td *goqu.TxDatabase) error {
