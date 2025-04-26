@@ -26,7 +26,7 @@ const (
 
 type DownloadTask struct {
 	ID             uint64                 `db:"id" goqu:"skipinsert,skipupdate"`
-	OfAccountID    uint64                 `db:"of_account_id" goqu:"skipinsert,skipupdate"`
+	OfAccountID    uint64                 `db:"of_account_id" goqu:"skipupdate"`
 	DownloadType   go_load.DownloadType   `db:"download_type"`
 	URL            string                 `db:"url"`
 	DownloadStatus go_load.DownloadStatus `db:"download_status"`
