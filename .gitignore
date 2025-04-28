@@ -25,3 +25,7 @@ __debug_bin*
  
 # Docker-compose test data folder
 mysql_data/
+
+# Downloaded file location in development
+downloads
+download/download.txt

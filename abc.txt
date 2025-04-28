@@ -1,1 +1,20 @@
-osaorajr
+curl -X 'POST' \
+  'localhost:8081/go_load.v1.GoLoadService/CreateSession' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  --cookie-jar cookie.txt \
+  -d '{
+  "accountName": "hieutm",
+  "password": "admin123"
+}'
+
+
+curl -X 'POST' \
+  'localhost:8081/go_load.v1.GoLoadService/CreateDownloadTask' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  --cookie cookie.txt \
+  -d '{
+  "downloadType": 1,
+  "url": "https://example.com"
+}'

@@ -13,6 +13,7 @@ import (
 	"github.com/nguyenhoang711/downloader/internal/dataaccess"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/cache"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
+	"github.com/nguyenhoang711/downloader/internal/dataaccess/file"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/mq/consumer"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/mq/producer"
 	"github.com/nguyenhoang711/downloader/internal/handler"
@@ -59,6 +60,13 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	takenAccountName := cache.NewTakenAccountName(client, logger)
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash, token, takenAccountName, logger)
 	downloadTaskDataAccessor := database.NewDownloadTaskDataAccessor(goquDatabase, logger)
+	download := config.Download
+	fileClient, err := file.NewLocalClient(download, logger)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
 	mq := config.MQ
 	producerClient, err := producer.NewClient(logger, mq)
 	if err != nil {
@@ -67,13 +75,13 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 		return nil, nil, err
 	}
 	downloadTaskCreatedProducer := producer.NewDownloadTaskCreatedProducer(producerClient, logger)
-	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, accountDataAccessor, goquDatabase, logger, downloadTaskCreatedProducer)
+	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, accountDataAccessor, fileClient, goquDatabase, logger, downloadTaskCreatedProducer)
 	goLoadServiceServer := grpc.NewHandler(account, downloadTaskLogic)
 	configsGRPC := config.GRPC
 	server := grpc.NewServer(goLoadServiceServer, configsGRPC, logger)
 	configsHTTP := config.HTTP
 	httpServer := http.NewServer(configsGRPC, configsHTTP, auth, logger)
-	downloadTaskCreated := consumers.NewDownloadTaskCreated(logger)
+	downloadTaskCreated := consumers.NewDownloadTaskCreated(downloadTaskLogic, logger)
 	consumerConsumer, err := consumer.NewConsumer(mq, logger)
 	if err != nil {
 		cleanup2()
