@@ -11,6 +11,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3
+	github.com/minio/minio-go/v7 v7.0.91
 	github.com/redis/go-redis/v9 v9.7.3
 	github.com/rubenv/sql-migrate v1.8.0
 	github.com/samber/lo v1.49.1
@@ -47,7 +48,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/minio/crc64nvme v1.0.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.91 // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect

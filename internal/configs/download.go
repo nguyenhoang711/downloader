@@ -14,4 +14,6 @@ type Download struct {
 	Address           string       `yaml:"address"`
 	Username          string       `yaml:"username"`
 	Password          string       `yaml:"password"`
+	AccessKey         string       `yaml:"access_key"`
+	SecretKey         string       `yaml:"secret_key"`
 }

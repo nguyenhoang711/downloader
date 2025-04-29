@@ -10,6 +10,7 @@ import (
 	"path"
 
 	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/nguyenhoang711/downloader/internal/configs"
 	"github.com/nguyenhoang711/downloader/internal/utils"
 	"go.uber.org/zap"
@@ -18,8 +19,8 @@ import (
 )
 
 type Client interface {
-	Read(ctx context.Context, filePath string) (io.ReadCloser, error)
 	Write(ctx context.Context, filePath string) (io.WriteCloser, error)
+	Read(ctx context.Context, filePath string) (io.ReadCloser, error)
 }
 
 func NewClient(
@@ -38,7 +39,6 @@ func NewClient(
 	}
 }
 
-// wrapper struct read bucket (streaming)
 type bufferedFileReader struct {
 	file           *os.File
 	bufferedReader io.Reader
@@ -52,6 +52,7 @@ func newBufferedFileReader(
 		bufferedReader: bufio.NewReader(file),
 	}
 }
+
 func (b bufferedFileReader) Close() error {
 	return b.file.Close()
 }
@@ -170,7 +171,10 @@ func NewS3Client(
 	downloadConfig configs.Download,
 	logger *zap.Logger,
 ) (Client, error) {
-	minioClient, err := minio.New(downloadConfig.Address, &minio.Options{})
+	minioClient, err := minio.New(downloadConfig.Address, &minio.Options{
+		Creds:  credentials.NewStaticV4(downloadConfig.AccessKey, downloadConfig.SecretKey, ""),
+		Secure: false,
+	})
 	if err != nil {
 		logger.With(zap.Error(err)).Error("failed to create minio client")
 		return nil, err
