@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/nguyenhoang711/downloader/internal/dataaccess/database"
@@ -320,8 +321,9 @@ func (d downloadTask) ExecuteDownloadTask(ctx context.Context, id uint64) error 
 		return nil
 	}
 
+	fileName := fmt.Sprintf("download_file_%d", id)
 	// cung cap viet vao dau
-	fileWriteCloser, err := d.fileClient.Write(ctx, "download.txt")
+	fileWriteCloser, err := d.fileClient.Write(ctx, fileName)
 	if err != nil {
 		return err
 	}

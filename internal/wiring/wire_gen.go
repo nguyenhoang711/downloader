@@ -61,7 +61,7 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash, token, takenAccountName, logger)
 	downloadTaskDataAccessor := database.NewDownloadTaskDataAccessor(goquDatabase, logger)
 	download := config.Download
-	fileClient, err := file.NewLocalClient(download, logger)
+	fileClient, err := file.NewClient(download, logger)
 	if err != nil {
 		cleanup2()
 		cleanup()
