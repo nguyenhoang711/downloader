@@ -37,5 +37,5 @@ download:
   address: "127.0.0.1:9000"
   username: "ROOTUSER"
   password: "CHANGEME123"
-  access_key: "access"
-  secret_key: "secret"
+  access_key: ""
+  secret_key: ""
