@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 
+	"github.com/nguyenhoang711/downloader/internal/configs"
 	go_load "github.com/nguyenhoang711/downloader/internal/generated/go_load/v1"
 	"github.com/nguyenhoang711/downloader/internal/logic"
 	"google.golang.org/grpc"
@@ -16,18 +17,25 @@ const (
 
 type Handler struct {
 	go_load.UnimplementedGoLoadServiceServer
-	accountLogic      logic.Account
-	downloadTaskLogic logic.DownloadTaskLogic
+	accountLogic                                 logic.Account
+	downloadTaskLogic                            logic.DownloadTaskLogic
+	getDownloadTaskFileResponseBufferSizeInBytes uint64
 }
 
 func NewHandler(
 	accountLogic logic.Account,
 	downloadTaskLogic logic.DownloadTaskLogic,
-) go_load.GoLoadServiceServer {
+	grpcConfig configs.GRPC,
+) (go_load.GoLoadServiceServer, error) {
+	getDownloadTaskFileResponseBufferSizeBytes, err := grpcConfig.GetDownloadTaskFile.GetResponseBufferSizeInBytes()
+	if err != nil {
+		return nil, err
+	}
 	return &Handler{
 		accountLogic:      accountLogic,
 		downloadTaskLogic: downloadTaskLogic,
-	}
+		getDownloadTaskFileResponseBufferSizeInBytes: getDownloadTaskFileResponseBufferSizeBytes,
+	}, nil
 }
 
 func (a Handler) getAuthTokenMetadata(ctx context.Context) string {
@@ -121,10 +129,32 @@ func (a Handler) DeleteDownloadTask(
 
 // GetDownloadTaskFile implements go_load.GoLoadServiceServer.
 func (a Handler) GetDownloadTaskFile(
-	*go_load.GetDownloadTaskFileRequest,
-	go_load.GoLoadService_GetDownloadTaskFileServer,
+	request *go_load.GetDownloadTaskFileRequest,
+	server go_load.GoLoadService_GetDownloadTaskFileServer,
 ) error {
-	panic("unimplemented")
+	outputReader, err := a.downloadTaskLogic.GetDownloadTaskFile(server.Context(), logic.GetDownloadTaskFileParams{
+		Token:          a.getAuthTokenMetadata(server.Context()),
+		DownloadTaskID: request.GetDownloadTaskId(),
+	})
+	if err != nil {
+		return err
+	}
+
+	defer outputReader.Close()
+
+	for {
+		responseBuffer := make([]byte, a.getDownloadTaskFileResponseBufferSizeInBytes)
+		readByteCount, readErr := outputReader.Read(responseBuffer)
+		if readErr != nil {
+			return readErr
+		}
+
+		if readByteCount == 0 {
+			break
+		}
+	}
+
+	return nil
 }
 
 // GetDownloadTaskList implements go_load.GoLoadServiceServer.

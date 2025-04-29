@@ -76,8 +76,13 @@ func InitializeStandaloneServer(configFilePath configs.ConfigFilePath) (*app.Ser
 	}
 	downloadTaskCreatedProducer := producer.NewDownloadTaskCreatedProducer(producerClient, logger)
 	downloadTaskLogic := logic.NewDownloadTask(token, downloadTaskDataAccessor, accountDataAccessor, fileClient, goquDatabase, logger, downloadTaskCreatedProducer)
-	goLoadServiceServer := grpc.NewHandler(account, downloadTaskLogic)
 	configsGRPC := config.GRPC
+	goLoadServiceServer, err := grpc.NewHandler(account, downloadTaskLogic, configsGRPC)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
 	server := grpc.NewServer(goLoadServiceServer, configsGRPC, logger)
 	configsHTTP := config.HTTP
 	httpServer := http.NewServer(configsGRPC, configsHTTP, auth, logger)
