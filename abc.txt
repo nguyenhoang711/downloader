@@ -4,7 +4,7 @@ curl -X 'POST' \
   -H 'Content-Type: application/json' \
   --cookie-jar cookie.txt \
   -d '{
-  "accountName": "hieutm",
+  "accountName": "hoangndh",
   "password": "admin123"
 }'
 
@@ -16,5 +16,5 @@ curl -X 'POST' \
   --cookie cookie.txt \
   -d '{
   "downloadType": 1,
-  "url": "https://example.com"
+  "url": "https://hst-dev.vivas.vn/cms/assets/2/images/17236278628944407745699613712056641097841169503680570779n.jpg"
 }'

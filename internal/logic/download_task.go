@@ -3,8 +3,9 @@ package logic
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
+	"net/url"
+	"path"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gammazero/workerpool"
@@ -107,6 +108,14 @@ func NewDownloadTask(
 		cronConfig:                  cronConfig,
 		downloadTaskCreatedProducer: downloadTaskCreatedProducer,
 	}
+}
+
+func extractFileName(rawURL string) (string, error) {
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+	return path.Base(parsedURL.Path), nil
 }
 
 func (d downloadTask) databaseDownloadTaskToProtoDownloadTask(
@@ -340,7 +349,11 @@ func (d downloadTask) ExecuteDownloadTask(ctx context.Context, id uint64) error 
 		return nil
 	}
 
-	fileName := fmt.Sprintf("download_file_%d", id)
+	fileName, err := extractFileName(downloadTask.URL)
+	if err != nil {
+		logger.With(zap.Error(err)).Error("failed to get download file name")
+		return err
+	}
 	// cung cap viet vao dau
 	fileWriteCloser, err := d.fileClient.Write(ctx, fileName)
 	if err != nil {
